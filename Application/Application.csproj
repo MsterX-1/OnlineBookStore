@@ -10,14 +10,4 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dtos\BookDto\" />
-    <Folder Include="Dtos\AuthorDto\" />
-    <Folder Include="Dtos\CartDto\" />
-    <Folder Include="Dtos\ReportDto\" />
-    <Folder Include="Dtos\PublisherOrderDto\" />
-    <Folder Include="Dtos\OrderDto\" />
-    <Folder Include="Dtos\PublisherDto\" />
-  </ItemGroup>
-
 </Project>
