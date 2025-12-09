@@ -18,6 +18,7 @@ namespace Application.Services
         {
             _userRepo = userRepo;
         }
+        // All the user related business logic will be implemented here
         public async Task<IEnumerable<GetUsersDto>> GetAllUsersAsync()
         {
             var users =  await _userRepo.GetAllUsersAsync();

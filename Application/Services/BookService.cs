@@ -16,6 +16,7 @@ namespace Application.Services
         {
             _bookRepo = bookRepo;
         }
-     
+        // All the book related business logic will be implemented here
+
     }
 }

@@ -15,11 +15,14 @@ namespace Application.Extention
         {
             return users.Select(user => new GetUsersDto
             {
-                Userid = user.Userid,
+                Userid = user.User_ID,
                 Username = user.Username,
+                First_Name = user.First_Name,
+                Last_Name = user.Last_Name,
                 Email = user.Email,
-                User_Role = user.User_Role,
-                Created_At = user.Created_At
+                Phone = user.Phone,
+                Address = user.Address,
+                Role = user.Role
             }).ToList();
         }
     }

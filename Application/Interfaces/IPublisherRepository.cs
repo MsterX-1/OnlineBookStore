@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
-    public interface IBookRepository
+    public interface IPublisherRepository
     {
-        // Define method signatures for book repository operations
+        // Define method signatures for publisher repository operations
     }
 }

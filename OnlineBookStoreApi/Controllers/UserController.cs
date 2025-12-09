@@ -13,6 +13,8 @@ namespace OnlineBookStoreApi.Controllers
         {
             _userService = userService;
         }
+        // All Endpoints are Created for User Entity
+
         [HttpGet("GetAllUsers")]
         public async Task<IActionResult> GetAllUsers()
         {

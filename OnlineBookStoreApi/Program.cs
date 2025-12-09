@@ -2,6 +2,8 @@ using Application.Interfaces;
 using Application.Services;
 using Infrastructure.Data;
 using Infrastructure.Repository;
+using Microsoft.OpenApi;
+
 
 namespace OnlineBookStoreApi
 {
@@ -14,9 +16,18 @@ namespace OnlineBookStoreApi
             // Add services to the container
             builder.Services.AddControllers();
 
-            // Add Swagger
+            #region Add Swagger
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Online Bookstore API",
+                    Version = "v1",
+                    Description = "API for Online Bookstore Order Processing System"
+                });
+            });
+            #endregion
 
             #region Configure CORS
             builder.Services.AddCors(options =>
@@ -37,9 +48,23 @@ namespace OnlineBookStoreApi
 
             // Register Repositories
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+            builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+            builder.Services.AddScoped<IBookRepository, BookRepository>();
+            builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IPublisherOrderRepository, PublisherOrderRepository>();
+            builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
             // Register Service
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<PublisherService>();
+            builder.Services.AddScoped<AuthorService>();
+            builder.Services.AddScoped<BookService>();
+            builder.Services.AddScoped<ShoppingCartService>();
+            builder.Services.AddScoped<OrderService>();
+            builder.Services.AddScoped<PublisherOrderService>();
+            builder.Services.AddScoped<ReportService>();
 
 
             var app = builder.Build();
@@ -53,6 +78,8 @@ namespace OnlineBookStoreApi
 
             // Middleware
             app.UseHttpsRedirection();
+
+            app.UseCors("AllowAll");
 
             app.UseAuthorization();
 

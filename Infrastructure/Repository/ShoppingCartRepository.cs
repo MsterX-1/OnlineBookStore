@@ -4,21 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
-using Domain.Models;
 using Infrastructure.Data;
-using Dapper;
 
 namespace Infrastructure.Repository
 {
-    public class BookRepository:IBookRepository
+    public class ShoppingCartRepository: IShoppingCartRepository
     {
         private readonly DatabaseContext _context;
 
-        public BookRepository(DatabaseContext context)
+        public ShoppingCartRepository(DatabaseContext context)
         {
             _context = context;
         }
-        // Implement The Methods Defined in IBookRepository Interface
-
+        // Implement The Methods Defined in IShoppingCartRepository Interface
     }
 }

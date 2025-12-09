@@ -9,6 +9,7 @@ namespace Application.Interfaces
 {
     public interface IUserRepository
     {
+        // Define method signatures for user related repository operations
         public Task<IEnumerable<User>> GetAllUsersAsync();
     }
 }

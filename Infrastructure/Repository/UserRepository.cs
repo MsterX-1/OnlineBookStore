@@ -19,14 +19,13 @@ namespace Infrastructure.Repository
         {
             _context = context;
         }
-
+        // Implement The Methods Defined in IUserRepository Interface
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
-            using( var db = _context.CreateConnection())
-            {
-                var sql = "SELECT * FROM Users";
-                return await db.QueryAsync<User>(sql);
-            }
+            using var db = _context.CreateConnection();
+            var sql = "SELECT * FROM Users";
+            return await db.QueryAsync<User>(sql);
         }
+
     }
 }
