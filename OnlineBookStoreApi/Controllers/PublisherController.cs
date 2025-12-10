@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using Application.Dtos.PublisherDto;
+using Application.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,45 @@ namespace OnlineBookStoreApi.Controllers
         {
             _publisherService = publisherService;
         }
-        // All Endpoints are created for Publisher Entity
-    }
+		[HttpGet("GetAllPublishers")]
+		public async Task<IActionResult> GetAllPublishers()
+		{
+			try
+			{
+				var publishers = await _publisherService.Getallpublishersasync();
+				return Ok(publishers);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(ex.Message);
+			}
+		}
+		[HttpGet("GetPublisher/{id}")]
+		public async Task<IActionResult> GetPublisherbyid(int id)
+		{
+			try
+			{
+				var publisher = await _publisherService.GetpublisherByIdAsync(id);
+				return Ok(publisher);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(ex.Message);
+			}
+		}
+		[HttpPost("CreatePublisher")]
+		public async Task<IActionResult> CreatePublisher([FromBody] CreatePublisherDto dto)
+		{
+			try
+			{
+				var publisherId = await _publisherService.CreatePublisherAsync(dto);
+				return Ok(new { PublisherId = publisherId, Message = "Publisher created successfully" });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+	}
 }
