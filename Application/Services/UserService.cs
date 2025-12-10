@@ -25,8 +25,26 @@ namespace Application.Services
 
             if (users == null || !users.Any())
                 throw new Exception("No users found.");
-
+  
             return users.ConvertToGetUsersDto();
+        }
+
+        public async Task<GetUserDto> GetUserByIdAsync(int id)
+        {
+            var user = await _userRepo.GetUserByIdAsync(id);
+            if (user == null)
+                throw new Exception($"User with ID {id} not found.");
+            return user.ConvertToGetUserDto();
+        }
+        public async Task<int> Register(RegisterDto dto)
+        {
+            // Check if username already exists
+            var existingUser = await _userRepo.GetUserByUserNameAsync(dto.Username);
+            if (existingUser != null)
+                throw new Exception("Username already exists.");
+
+            var user = dto.ConvertToUser();
+            return await _userRepo.CreateUserAsync(user);
         }
     }
 }

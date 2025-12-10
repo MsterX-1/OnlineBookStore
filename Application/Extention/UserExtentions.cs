@@ -25,5 +25,28 @@ namespace Application.Extention
                 Role = user.Role
             }).ToList();
         }
+        public static GetUserDto ConvertToGetUserDto(this User user)
+        {
+            return new GetUserDto
+            {
+                Userid = user.User_ID,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role
+            };
+        }
+        public static User ConvertToUser(this RegisterDto dto)
+        {
+            return new User
+            {
+                Username = dto.Username,
+                Password = dto.Password,
+                First_Name = dto.First_Name,
+                Last_Name = dto.Last_Name,
+                Email = dto.Email,
+                Phone = dto.Phone,
+                Address = dto.Address
+            };
+        }
     }
 }

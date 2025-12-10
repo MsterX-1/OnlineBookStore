@@ -11,5 +11,8 @@ namespace Application.Interfaces
     {
         // Define method signatures for user related repository operations
         public Task<IEnumerable<User>> GetAllUsersAsync();
+        public Task<User?> GetUserByIdAsync(int id); 
+        public Task<int> CreateUserAsync(User user);
+        public Task<User?> GetUserByUserNameAsync(string userName);
     }
 }

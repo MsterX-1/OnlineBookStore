@@ -19,6 +19,7 @@ namespace Infrastructure.Repository
         {
             _context = context;
         }
+
         // Implement The Methods Defined in IUserRepository Interface
         public async Task<IEnumerable<User>> GetAllUsersAsync()
         {
@@ -27,5 +28,29 @@ namespace Infrastructure.Repository
             return await db.QueryAsync<User>(sql);
         }
 
+        public async Task<User?> GetUserByIdAsync(int id)
+        {
+            using var db = _context.CreateConnection(); 
+            var sql = "SELECT * FROM Users WHERE User_ID = @Id";
+            return await db.QueryFirstOrDefaultAsync<User>(sql, new { Id = id });
+        }
+
+        public async Task<int> CreateUserAsync(User user)
+        {
+            using var db = _context.CreateConnection();
+            var sql = @"INSERT INTO Users (Username, Password, First_Name, Last_Name, Email, Phone, Address)
+                      VALUES (@Username, @Password, @First_Name, @Last_Name, @Email, @Phone, @Address)"
+                        + "SELECT CAST(SCOPE_IDENTITY() as int)";   
+            return await db.ExecuteScalarAsync<int>(sql, user);
+           
+
+        }
+
+        public async Task<User?> GetUserByUserNameAsync(string userName)
+        {
+            using var db = _context.CreateConnection();
+            var sql = "SELECT * FROM Users WHERE Username = @Username";
+            return await db.QueryFirstOrDefaultAsync<User>(sql, new { Username = userName });
+        }
     }
 }
