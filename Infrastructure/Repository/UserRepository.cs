@@ -52,5 +52,37 @@ namespace Infrastructure.Repository
             var sql = "SELECT * FROM Users WHERE Username = @Username";
             return await db.QueryFirstOrDefaultAsync<User>(sql, new { Username = userName });
         }
+
+        public async Task<User?> LoginAsync(string username, string password)
+        {
+            using var db = _context.CreateConnection();
+            var sql = "SELECT * FROM Users WHERE Username = @Username AND Password = @Password";
+            return await db.QueryFirstOrDefaultAsync<User>(sql, new { Username = username, Password = password });
+        }
+
+        public async Task<bool> UpdateUserAsync(User user)
+        {
+          using var db = _context.CreateConnection();
+            var sql = @"UPDATE Users SET 
+                        Username = @Username, 
+                        Password = @Password, 
+                        First_Name = @First_Name, 
+                        Last_Name = @Last_Name, 
+                        Email = @Email, 
+                        Phone = @Phone, 
+                        Address = @Address
+                        WHERE User_ID = @User_ID";
+
+            var result = await db.ExecuteAsync(sql, user);
+            return result > 0;
+        }
+        public async Task<bool> DeleteUserAsync(int userId)
+        {
+            using var db = _context.CreateConnection();
+            var sql = "DELETE FROM Users WHERE User_ID = @UserId";
+            var result = await db.ExecuteAsync(sql, new { UserId = userId });
+            return result > 0;
+        }
+
     }
 }

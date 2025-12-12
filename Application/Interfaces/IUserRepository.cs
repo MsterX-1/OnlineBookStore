@@ -14,5 +14,8 @@ namespace Application.Interfaces
         public Task<User?> GetUserByIdAsync(int id); 
         public Task<int> CreateUserAsync(User user);
         public Task<User?> GetUserByUserNameAsync(string userName);
+        public Task<User?> LoginAsync(string username, string password);
+        public Task<bool> UpdateUserAsync(User user);
+        public Task<bool> DeleteUserAsync(int userId);
     }
 }
