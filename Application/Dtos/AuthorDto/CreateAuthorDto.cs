@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Application.Dtos.AuthorDto
 {
-    public class GetAuthorDto
+    public class CreateAuthorDto
     {
+      public required  string Name { get; set; }
     }
 }
