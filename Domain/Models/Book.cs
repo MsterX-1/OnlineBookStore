@@ -16,5 +16,6 @@ namespace Domain.Models
         public int Stock_Qty { get; set; }
         public int Threshold { get; set; }
         public int? Publisher_ID { get; set; }
+        public byte[]? BookPhoto { get; set; }
     }
 }
