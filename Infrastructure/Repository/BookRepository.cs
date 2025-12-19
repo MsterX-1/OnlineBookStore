@@ -25,12 +25,12 @@ namespace Infrastructure.Repository
         {
             using var db = _context.CreateConnection();
             var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
-                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors
+                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name
+                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
                         ORDER BY b.Title;";
             return await db.QueryAsync<GetBookDto>(sql);
         }
@@ -39,13 +39,13 @@ namespace Infrastructure.Repository
         {
             using var db = _context.CreateConnection();
             var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
-                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors
+                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
                         Where b.ISBN=@ISBN
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name";
+                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto";
             return await db.QueryFirstOrDefaultAsync<GetBookDto>(sql, new { ISBN = isbn });
         }
 
@@ -53,13 +53,13 @@ namespace Infrastructure.Repository
         {
             using var db = _context.CreateConnection();
             var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
-                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors
+                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
                         Where b.Category=@cat
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name
+                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
                         ORDER BY b.Title;";
             return await db.QueryAsync<GetBookDto>(sql, new { cat = category });
         }
@@ -68,13 +68,13 @@ namespace Infrastructure.Repository
         {
             using var db = _context.CreateConnection();
             var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
-                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors
+                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
                         Where b.Title LIKE '%' + @Title + '%'
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name
+                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
                         ORDER BY b.Title;";
             return await db.QueryAsync<GetBookDto>(sql, new { Title = title });
         }
@@ -83,13 +83,13 @@ namespace Infrastructure.Repository
         {
             using var db = _context.CreateConnection();
             var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
-                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors
+                        b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
                         Where b.Stock_Qty < b.Threshold
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name
+                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
                         ORDER BY b.Stock_Qty ASC, b.Title;";
             return await db.QueryAsync<GetBookDto>(sql);
         }
@@ -164,7 +164,8 @@ namespace Infrastructure.Repository
                     b.Threshold,
                     b.Publisher_ID AS PublisherId,
                     p.Name AS PublisherName,
-                    STRING_AGG(a.Name, ',') AS Authors
+                    STRING_AGG(a.Name, ',') AS Authors,
+                    b.BookPhoto
                 FROM Book b
                 LEFT JOIN Publisher p ON b.Publisher_ID = p.Publisher_ID
                 LEFT JOIN Book_Author ba ON b.ISBN = ba.ISBN
@@ -176,10 +177,18 @@ namespace Infrastructure.Repository
                     AND (@PublisherName IS NULL OR p.Name LIKE '%' + @PublisherName + '%')
                     AND (@AuthorName IS NULL OR a.Name LIKE '%' + @AuthorName + '%')
                 GROUP BY b.ISBN, b.Title, b.Pub_Year, b.Category, b.Price, 
-                         b.Stock_Qty, b.Threshold, b.Publisher_ID, p.Name
+                         b.Stock_Qty, b.Threshold, b.Publisher_ID, p.Name,b.BookPhoto
                 ORDER BY b.Title";
 
             return await db.QueryAsync<GetBookDto>(sql, dto);
+        }
+
+        public async Task<bool> UbloadBookPhoto(string isbn, byte[] photo)
+        {
+            using var db = _context.CreateConnection();
+            var sql = "UPDATE Book SET BookPhoto = @Photo WHERE ISBN = @ISBN";
+            var rows = await db.ExecuteAsync(sql, new { Photo = photo, ISBN = isbn });
+            return rows > 0;
         }
     }
 }

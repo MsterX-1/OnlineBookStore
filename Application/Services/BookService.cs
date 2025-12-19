@@ -131,6 +131,16 @@ namespace Application.Services
                 throw new Exception("No books found matching the search criteria.");
             return books;
         }
+        public async Task<bool> UploadBookPhotoAsync(string ISBN , byte[] photo)
+        {
+            var book = await _bookRepo.GetBookEntityByISBNAsync(ISBN);
+            if (book == null)
+                throw new Exception($"Book with ISBN {ISBN} not found.");
+            var result = await _bookRepo.UbloadBookPhoto(ISBN,photo);
+            if (!result)
+                throw new Exception($"Failed to upload photo for book with ISBN {ISBN}.");
+            return result;
+        }
 
     }
 }

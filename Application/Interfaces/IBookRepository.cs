@@ -23,5 +23,6 @@ namespace Application.Interfaces
         Task<bool> AddBookAuthorsAsync(string isbn, int authorId);
         Task<bool> RemoveBookAuthorsAsync(string isbn, int authorId);
         Task<IEnumerable<GetBookDto>> SearchBooksAdvancedAsync(SearchBookDto dto);
+        Task<bool> UbloadBookPhoto(string isbn,byte[] photo);
     }
 }

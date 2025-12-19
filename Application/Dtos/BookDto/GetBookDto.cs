@@ -17,5 +17,6 @@ namespace Application.Dtos.BookDto
         public int Threshold { get; set; }
         public string? PublisherName { get; set; }
         public string? Authors { get; set; }
+        public byte[]? BookPhoto { get; set; }
     }
 }

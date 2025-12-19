@@ -82,19 +82,7 @@ namespace OnlineBookStoreApi.Controllers
                 return NotFound(ex.Message);
             }
         }
-        [HttpPost("SearchBooksAdvanced")]
-        public async Task<IActionResult> SearchBooksAdvanced([FromBody] SearchBookDto dto)
-        {
-            try
-            {
-                var books = await _bookService.SearchBooksAdvancedAsync(dto);
-                return Ok(books);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
-        }
+
         #endregion
 
         #region Post Methods
@@ -129,6 +117,59 @@ namespace OnlineBookStoreApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpPost("SearchBooksAdvanced")]
+        public async Task<IActionResult> SearchBooksAdvanced([FromBody] SearchBookDto dto)
+        {
+            try
+            {
+                var books = await _bookService.SearchBooksAdvancedAsync(dto);
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpPost("UploadBookPhoto")]
+        public async Task<IActionResult> UploadBookPhoto([FromForm]  PhotoUploder dto)
+        {
+            try
+            {
+
+                if (string.IsNullOrWhiteSpace(dto.ISBN))
+                    return BadRequest("ISBN is required.");
+
+                if (dto.image == null)
+                    return BadRequest("Photo is required.");
+
+                if (dto.image.Length == 0)
+                    return BadRequest("Uploaded file is empty.");
+
+                if (dto.image.Length > 5 * 1024 * 1024)
+                    return BadRequest("Maximum allowed file size is 5MB.");
+
+                if (dto.image.ContentType != "image/jpeg" &&
+                    dto.image.ContentType != "image/png" &&
+                    dto.image.ContentType != "image/webp")
+                    return BadRequest("Only JPG, PNG, and WEBP images are allowed.");
+
+                //  Convert to byte[]
+                using var ms = new MemoryStream();
+                await dto.image.CopyToAsync(ms);
+
+                var result = await _bookService.UploadBookPhotoAsync(dto.ISBN, ms.ToArray());
+
+                if (result)
+                    return Ok("Book photo uploaded successfully.");
+
+                return BadRequest("Failed to upload book photo.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
         #endregion
 
@@ -185,5 +226,11 @@ namespace OnlineBookStoreApi.Controllers
             }
         }
         #endregion
+    }
+    public class PhotoUploder
+    {
+        public required string ISBN { get; set; }
+        public required IFormFile image { get; set; }
+
     }
 }
