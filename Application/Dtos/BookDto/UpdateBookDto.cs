@@ -6,17 +6,16 @@ using System.Threading.Tasks;
 
 namespace Application.Dtos.BookDto
 {
-    public class GetBookDto
+    public class UpdateBookDto
     {
-        public string? ISBN { get; set; }
+        public required string ISBN { get; set; } // ISBN is required to identify the book to update
+        // Other fields are optional for partial updates
         public string? Title { get; set; }
         public int? PubYear { get; set; }
-        public decimal Price { get; set; }
+        public decimal? Price { get; set; }
         public string? Category { get; set; }
-        public int StockQty { get; set; }
-        public int Threshold { get; set; }
+        public int? StockQty { get; set; }
+        public int? Threshold { get; set; }
         public int? PublisherId { get; set; }
-        public string? PublisherName { get; set; }
-        public List<string>? Authors { get; set; }
     }
 }

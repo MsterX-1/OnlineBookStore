@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Application.Dtos.AuthorDto
 {
-    public class GetAuthorDto
+    public class UpdateAuthorDTO
     {
+        public int Id { get; set; }
+        public string? Name { get; set; }
+
     }
 }
