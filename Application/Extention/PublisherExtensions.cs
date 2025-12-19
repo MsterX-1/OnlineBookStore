@@ -42,6 +42,16 @@ namespace Application.Extention
 				Phone = dto.Phone
 			};
 		}
+		public static Publisher ConvertToPublisher(this UpdatePublisherDto dto)
+		{
+			return new Publisher
+			{
+				Publisher_ID = dto.PublisherId,
+				Name = dto.Name,
+				Address = dto.Address,
+				Phone = dto.Phone
+			};
+		}
 
 	}
 }

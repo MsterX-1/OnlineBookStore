@@ -54,6 +54,33 @@ namespace OnlineBookStoreApi.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
+		[HttpPut("UpdatePublisher")]
+		public async Task<IActionResult> UpdatePublisher([FromBody] UpdatePublisherDto dto)
+		{
+			try
+			{
+				await _publisherService.UpdatePublisherAsync(dto);
+				return Ok(new { Message = "Publisher updated successfully" });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpDelete("DeletePublisher/{id}")]
+		public async Task<IActionResult> DeletePublisher(int id)
+		{
+			try
+			{
+				await _publisherService.DeletePublisherAsync(id);
+				return Ok(new { Message = "Publisher deleted successfully" });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
 
 	}
 }

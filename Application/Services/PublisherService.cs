@@ -38,6 +38,22 @@ namespace Application.Services
             var publisher = dto.ConvertToPublisher();
             return await _publisherRepo.CreatePublisherAsync(publisher);
         }
+		public async Task<bool> UpdatePublisherAsync(UpdatePublisherDto dto)
+		{
+			var publisher = dto.ConvertToPublisher();
+			var result = await _publisherRepo.UpdatePublisherAsync(publisher);
+			if (!result)
+				throw new Exception($"Failed to update publisher with ID {dto.PublisherId}.");
+			return result;
+		}
 
-    } 
+		public async Task<bool> DeletePublisherAsync(int publisherId)
+		{
+			var result = await _publisherRepo.DeletePublisherAsync(publisherId);
+			if (!result)
+				throw new Exception($"Failed to delete publisher with ID {publisherId}.");
+			return result;
+		}
+
+	} 
 }
