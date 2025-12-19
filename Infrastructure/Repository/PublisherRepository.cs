@@ -43,6 +43,22 @@ namespace Infrastructure.Repository
 			return await db.ExecuteScalarAsync<int>(sql, publisher);
 		}
 
+		public async Task<bool> UpdatePublisherAsync(Publisher publisher)
+		{
+			using var db = _context.CreateConnection();
+			var sql = @"UPDATE Publisher 
+                       SET Name = @Name, Address = @Address, Phone = @Phone 
+                       WHERE Publisher_ID = @Publisher_ID";
+			var rows = await db.ExecuteAsync(sql, publisher);
+			return rows > 0;
+		}
 
-    }
+		public async Task<bool> DeletePublisherAsync(int publisherId)
+		{
+			using var db = _context.CreateConnection();
+			var sql = "DELETE FROM Publisher WHERE Publisher_ID = @PublisherId";
+			var rows = await db.ExecuteAsync(sql, new { PublisherId = publisherId });
+			return rows > 0;
+		}
+	}
 }

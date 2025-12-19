@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace Application.Dtos.PublisherOrderDto
 {
-    public class GetPublisherOrderDto
-    {
-    }
+	public class GetPublisherOrderDto
+	{
+		public int PubOrderId { get; set; }
+		public string? ISBN { get; set; }
+		public string? BookTitle { get; set; }
+		public int Quantity { get; set; }
+		public DateTime OrderDate { get; set; }
+		public string? Status { get; set; }
+	}
 }
