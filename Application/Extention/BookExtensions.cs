@@ -10,6 +10,19 @@ namespace Application.Extention
 {
     public static class BookExtensions
     {
-        
+        public static Book ToBookModel(this CreateBookDto createBookDto)
+        {
+            return new Book
+            {
+                ISBN = createBookDto.ISBN,
+                Title = createBookDto.Title,
+                Pub_Year = createBookDto.PubYear,
+                Price = createBookDto.Price,
+                Category = createBookDto.Category,
+                Stock_Qty = createBookDto.StockQty,
+                Threshold = createBookDto.Threshold,
+                Publisher_ID = createBookDto.PublisherId
+            };
+        }
     }
 }

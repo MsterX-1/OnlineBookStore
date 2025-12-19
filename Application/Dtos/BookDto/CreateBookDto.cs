@@ -16,6 +16,5 @@ namespace Application.Dtos.BookDto
         public int StockQty { get; set; } = 0;
         public int Threshold { get; set; } = 10;
         public required int PublisherId { get; set; }
-        public List<int>? AuthorIds { get; set; }
     }
 }
