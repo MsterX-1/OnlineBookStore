@@ -11,10 +11,9 @@ namespace Application.Interfaces
     {
         // Define method signatures for author repository operations
         public Task<IEnumerable<Author>> GetAllAuthorAsync();
-        public Task<Author> GetAuthorByIdAsync(int id);
+        public Task<Author?> GetAuthorByIdAsync(int id);
         public Task<int> CreateAuthorAsync(string name);
         public Task<bool> DeleteAuthorAsync(int id);
-        
         public Task<bool> UpdateAuthorAsync(Author author);
     }
 }

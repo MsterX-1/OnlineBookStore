@@ -10,16 +10,5 @@ namespace Application.Extention
 {
     public static class AuthorExtensions
     {
-        public static Author ConvertToAuthor(this UpdateAuthorDTO DTO)
-        {
-            return new Author
-            {
-                Name = DTO.Name
-
-
-
-            };
-
-        }
     }
 }

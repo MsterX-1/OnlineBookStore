@@ -18,17 +18,16 @@ namespace Infrastructure.Repository
         {
             _context = context;
         }
+        // Implement The Methods Defined in IAuthorRepository Interface
 
         public async Task<IEnumerable<Author>> GetAllAuthorAsync()
         {
-            // Implement The Methods Defined in IAuthorRepository Interface
-
             using var db = _context.CreateConnection();
             var sql = "SELECT * FROM Author";
             return await db.QueryAsync<Author>(sql);
         }
 
-        public async Task<Author> GetAuthorByIdAsync(int id)
+        public async Task<Author?> GetAuthorByIdAsync(int id)
         {
             using var db = _context.CreateConnection();
             var sql = "SELECT * FROM Author WHERE Author_ID = @Id";
@@ -50,17 +49,13 @@ namespace Infrastructure.Repository
             return result > 0;
         }
         public async Task<bool> UpdateAuthorAsync(Author author)
-        {
-            
+        {  
                 using var db = _context.CreateConnection();
                 var sql = "UPDATE Author SET Name = @Name WHERE Author_ID = @Author_ID";
                 var rows = await db.ExecuteAsync(sql, author);
                 return rows > 0;
             
-
         }
-
-
 
     }
 }
