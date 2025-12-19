@@ -1,6 +1,7 @@
 ﻿using Application.Dtos.AuthorDto;
 using Application.Services;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineBookStoreApi.Controllers
@@ -69,7 +70,21 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpPut("updateauthor")]
+        public async Task<IActionResult> UpdateAuthorAsync([FromBody] UpdateAuthorDTO dto)
+        {
+            try
+            {
+                var result =await _authorService.UpdateAuthorAsync(dto);
+                return Ok(new { Success = result, Message = "Author updated successfully" });
 
+            }
+            catch  (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+
+        }
 
 
 

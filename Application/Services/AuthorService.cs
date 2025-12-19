@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Application.Dtos.AuthorDto;
+using Application.Dtos.UserDto;
+using Application.Interfaces;
+using Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Application.Dtos.AuthorDto;
-using Application.Interfaces;
-using Domain.Models;
 
 namespace Application.Services
 {
@@ -48,6 +49,22 @@ namespace Application.Services
             var result = await _authorRepo.DeleteAuthorAsync(authorId);
             if (!result)
                 throw new Exception($"Failed to delete user with ID {authorId}.");
+            return result;
+        }
+
+
+        public async Task<bool> UpdateAuthorAsync(UpdateAuthorDTO dto)
+        {
+            var author = await _authorRepo.GetAuthorByIdAsync(dto.Id);
+            if (author == null)
+                throw new Exception($"User with ID {dto.Id} not found.");
+
+            author.Name = dto.Name ?? author.Name;
+           
+
+            var result = await _authorRepo.UpdateAuthorAsync(author);
+            if (!result)
+                throw new Exception($"Failed to update user with ID {dto.Id}.");
             return result;
         }
     }

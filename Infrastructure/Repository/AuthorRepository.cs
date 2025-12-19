@@ -49,7 +49,18 @@ namespace Infrastructure.Repository
             var result = await db.ExecuteAsync(sql, new { AId = AuthorId });
             return result > 0;
         }
+        public async Task<bool> UpdateAuthorAsync(Author author)
+        {
+            
+                using var db = _context.CreateConnection();
+                var sql = "UPDATE Author SET Name = @Name WHERE Author_ID = @Author_ID";
+                var rows = await db.ExecuteAsync(sql, author);
+                return rows > 0;
+            
 
-        
+        }
+
+
+
     }
 }

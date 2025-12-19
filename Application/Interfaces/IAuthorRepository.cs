@@ -14,6 +14,7 @@ namespace Application.Interfaces
         public Task<Author> GetAuthorByIdAsync(int id);
         public Task<int> CreateAuthorAsync(string name);
         public Task<bool> DeleteAuthorAsync(int id);
-
+        
+        public Task<bool> UpdateAuthorAsync(Author author);
     }
 }
