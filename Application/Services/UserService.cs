@@ -101,5 +101,15 @@ namespace Application.Services
                 throw new Exception($"Failed to delete user with ID {userId}.");
             return result;
         }
+        public async Task<bool> LogoutAsync(int userId)
+        {
+            // This will be handled by the shopping cart service
+            // Just validate user exists
+            var user = await _userRepo.GetUserByIdAsync(userId);
+            if (user == null)
+                throw new Exception($"User with ID {userId} not found.");
+
+            return true;
+        }
     }
 }

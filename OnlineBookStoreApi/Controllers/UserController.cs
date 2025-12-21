@@ -10,9 +10,11 @@ namespace OnlineBookStoreApi.Controllers
     public class UserController : ControllerBase
     {
         private readonly UserService _userService;
-        public UserController(UserService userService)
+        private readonly ShoppingCartService _cartService;
+        public UserController(UserService userService, ShoppingCartService cartService)
         {
             _userService = userService;
+            _cartService = cartService;
         }
         // All Endpoints are Created for User Entity
 
@@ -74,7 +76,21 @@ namespace OnlineBookStoreApi.Controllers
                 return Unauthorized(ex.Message);
             }
         }
-        // Logout will be handeled when making Cart Service to clear the cart on logout
+        [HttpPost("Logout/{userId}")]
+        public async Task<IActionResult> Logout(int userId)
+        {
+            try
+            {
+                await _userService.LogoutAsync(userId);
+                // Clear the shopping cart on logout
+                await _cartService.ClearCustomerCartAsync(userId);
+                return Ok(new { Message = "Logged out successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         #endregion
 
         #region Put Methods
