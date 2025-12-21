@@ -34,7 +34,7 @@ namespace OnlineBookStoreApi.Controllers
 		{
 			try
 			{
-				var cartId = await _cartService.AddItemToCartAsync(request.CustomerId, request.ISBN, request.Quantity);
+				var cartId = await _cartService.AddItemToCartAsync(request);
 				return Ok(new { CartId = cartId , Message = "Item added to cart successfully" });
 			}
 			catch (Exception ex)

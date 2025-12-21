@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Dtos.CartDto;
+using Application.Extention;
 using Application.Interfaces;
 using Domain.Models;
 
@@ -25,36 +26,16 @@ namespace Application.Services
 			if (!cartItems.Any())
 				throw new Exception("Cart is empty.");
 
-			var cartDtos = new List<GetCartDto>();
-			foreach (var item in cartItems)
-			{
-				var book = await _bookRepo.GetBookByISBNAsync(item.ISBN!);
-				cartDtos.Add(new GetCartDto
-				{
-					CartId = item.Cart_ID,
-					CustomerId = item.Customer_ID!.Value,
-					ISBN = item.ISBN,
-					BookTitle = book?.Title,
-					UnitPrice = book?.Price,
-					Quantity = item.Quantity!.Value,
-					TotalPrice = book != null ? book.Price * item.Quantity!.Value : 0
-				});
-			}
-			return cartDtos;
+			return cartItems;
 
 		}
-		public async Task<int> AddItemToCartAsync(int customerId, string isbn, int quantity)
+		public async Task<int> AddItemToCartAsync(AddToCartDto dto)
 		{
-			var book = await _bookRepo.GetBookByISBNAsync(isbn);
+			var book = await _bookRepo.GetBookByISBNAsync(dto.ISBN);
 			if (book == null)
 				throw new Exception("Book not found.");
-			var cartItem = new ShoppingCart
-			{
-				Customer_ID = customerId,
-				ISBN = isbn,
-				Quantity = quantity
-			};
-			return await _cartRepo.AddToCartAsync(cartItem);
+
+			return await _cartRepo.AddToCartAsync(dto.ConvertToShoppingCartModel());
 
 		}
 		public async Task<bool> UpdateCartItemAsync(UpdateCartDto cartDto)
@@ -63,7 +44,7 @@ namespace Application.Services
 			if (cartItem == null)
 				throw new Exception("Cart item not found.");
 			cartItem.Quantity = cartDto.Quantity;
-			return await _cartRepo.UpdateCartItemAsync(cartItem);
+			return await _cartRepo.UpdateCartItemAsync(cartItem.ConvertToShoppingCartModel());
 		}
 		public async Task<bool> RemoveItemFromCartAsync(int cartId)
 		{
