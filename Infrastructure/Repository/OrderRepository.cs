@@ -18,69 +18,143 @@ namespace Infrastructure.Repository
         {
             _context = context;
         }
-        public async Task<IEnumerable<GetOrderDto>> GetAllOrdersAsync()
-        {
-            using var db = _context.CreateConnection();
-            var sql = @"SELECT 
-                o.Order_ID,
-                o.Customer_ID,
-                o.Order_Date,
-                o.Total_Amount,
-                u.First_Name + ' ' + u.Last_Name AS CustomerName,
-                oi.Item_ID,
-                oi.ISBN,
-                oi.Quantity,
-                oi.Unit_Price
-                FROM Customer_Order o
-                JOIN Users u ON o.Customer_ID = u.User_ID
-                LEFT JOIN Order_Items oi ON o.Order_ID = oi.Order_ID
-                ORDER BY o.Order_Date DESC";
-            ;
-            return await db.QueryAsync<GetOrderDto>(sql);
-        }
-        public async Task<IEnumerable<GetOrderDto>> GetOrderByIdAsync(int orderId)
-        {
-            using var db = _context.CreateConnection();
+		public async Task<IEnumerable<GetOrderDto>> GetAllOrdersAsync()
+		{
+			using var db = _context.CreateConnection();
 
-            var sql = @"SELECT 
-                o.Order_ID,
-                o.Customer_ID,
-                o.Order_Date,
-                o.Total_Amount,
-                u.First_Name + ' ' + u.Last_Name AS CustomerName,
-                oi.Item_ID,
-                oi.ISBN,
-                oi.Quantity,
-                oi.Unit_Price
-                FROM Customer_Order o
-                JOIN Users u ON o.Customer_ID = u.User_ID
-                LEFT JOIN Order_Items oi ON o.Order_ID = oi.Order_ID
-        WHERE o.Order_ID = @OrderId;
-    ";
+			var sql = @"SELECT 
+        o.Order_ID,
+        o.Customer_ID,
+        o.Order_Date,
+        o.Total_Amount,
+        u.First_Name + ' ' + u.Last_Name AS CustomerName,
+        oi.Item_ID,
+        oi.ISBN,
+        oi.Quantity,
+        oi.Unit_Price
+    FROM Customer_Order o
+    JOIN Users u ON o.Customer_ID = u.User_ID
+    LEFT JOIN Order_Items oi ON o.Order_ID = oi.Order_ID
+    ORDER BY o.Order_Date DESC";
 
-            return await db.QueryAsync<GetOrderDto>(sql, new { OrderId = orderId });
-        }
-        public async Task<IEnumerable<GetOrderDto>> GetOrdersByCustomerIdAsync(int customerId)
+			var orderDictionary = new Dictionary<int, GetOrderDto>();
 
-        {
-            using var db = _context.CreateConnection();
-            var sql = @"SELECT 
-                o.Order_ID,
-                o.Customer_ID,
-                o.Order_Date,
-                o.Total_Amount,
-                u.First_Name + ' ' + u.Last_Name AS CustomerName,
-                oi.Item_ID,
-                oi.ISBN,
-                oi.Quantity,
-                oi.Unit_Price
-                FROM Customer_Order o
-                JOIN Users u ON o.Customer_ID = u.User_ID
-                LEFT JOIN Order_Items oi ON o.Order_ID = oi.Order_ID
-        WHERE o.Customer_ID = @CustomerId
-                ORDER BY o.Order_Date DESC";
-            return await db.QueryAsync<GetOrderDto>(sql, new { CustomerId = customerId });
-        }
+			await db.QueryAsync<GetOrderDto, GetOrderItemDto, GetOrderDto>(
+				sql,
+				(order, item) =>
+				{
+					if (!orderDictionary.TryGetValue(order.Order_ID, out var existingOrder))
+					{
+						existingOrder = order;
+						existingOrder.Items = new List<GetOrderItemDto>();
+						orderDictionary.Add(existingOrder.Order_ID, existingOrder);
+					}
+
+					if (item != null && item.Item_Id != 0)
+					{
+						existingOrder.Items.Add(item);
+					}
+
+					return existingOrder;
+				},
+				splitOn: "Item_ID"
+			);
+
+			return orderDictionary.Values;
+		}
+
+		public async Task<GetOrderDto?> GetOrderByIdAsync(int orderId)
+		{
+			using var db = _context.CreateConnection();
+
+			var sql = @"SELECT 
+        o.Order_ID,
+        o.Customer_ID,
+        o.Order_Date,
+        o.Total_Amount,
+        u.First_Name + ' ' + u.Last_Name AS CustomerName,
+        oi.Item_ID,
+        oi.ISBN,
+        oi.Quantity,
+        oi.Unit_Price
+    FROM Customer_Order o
+    JOIN Users u ON o.Customer_ID = u.User_ID
+    LEFT JOIN Order_Items oi ON o.Order_ID = oi.Order_ID
+    WHERE o.Order_ID = @OrderId";
+
+			var dict = new Dictionary<int, GetOrderDto>();
+
+			await db.QueryAsync<GetOrderDto, GetOrderItemDto, GetOrderDto>(
+				sql,
+				(order, item) =>
+				{
+					if (!dict.TryGetValue(order.Order_ID, out var existing))
+					{
+						existing = order;
+						existing.Items = new();
+						dict.Add(existing.Order_ID, existing);
+					}
+
+					if (item != null && item.Item_Id != 0)
+						existing.Items.Add(item);
+
+					return existing;
+				},
+				new { OrderId = orderId },
+				splitOn: "Item_ID"
+			);
+
+			return dict.Values.FirstOrDefault();
+		}
+
+		public async Task<GetOrderDto?> GetOrderByCustomerIdAsync(int customerId)
+		{
+			using var db = _context.CreateConnection();
+
+			var sql = @"SELECT 
+        o.Order_ID,
+        o.Customer_ID,
+        o.Order_Date,
+        o.Total_Amount,
+        u.First_Name + ' ' + u.Last_Name AS CustomerName,
+        oi.Item_ID,
+        oi.ISBN,
+        oi.Quantity,
+        oi.Unit_Price
+    FROM Customer_Order o
+    JOIN Users u ON o.Customer_ID = u.User_ID
+    LEFT JOIN Order_Items oi ON o.Order_ID = oi.Order_ID
+    WHERE o.Customer_ID = @CustomerId
+    ORDER BY o.Order_Date DESC";
+
+			var dict = new Dictionary<int, GetOrderDto>();
+
+			await db.QueryAsync<GetOrderDto, GetOrderItemDto, GetOrderDto>(
+				sql,
+				(order, item) =>
+				{
+					if (!dict.TryGetValue(order.Order_ID, out var existing))
+					{
+						existing = order;
+						existing.Items = new List<GetOrderItemDto>();
+						dict.Add(existing.Order_ID, existing);
+					}
+
+					if (item != null && item.Item_Id != 0)
+					{
+						existing.Items.Add(item);
+					}
+
+					return existing;
+				},
+				new { CustomerId = customerId },
+				splitOn: "Item_ID"
+			);
+
+			return dict.Values.FirstOrDefault();
+		}
+
+
 		public async Task<int> CreateOrderAsync(int customerId, string ccNumber, DateTime ccExpiry)
 		{
 			using var db = _context.CreateConnection();

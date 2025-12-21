@@ -11,8 +11,8 @@ namespace Application.Interfaces
     public interface IOrderRepository
     {
 		Task<IEnumerable<GetOrderDto>> GetAllOrdersAsync();
-		Task<IEnumerable<GetOrderDto>> GetOrderByIdAsync(int orderId);
-		Task<IEnumerable<GetOrderDto>> GetOrdersByCustomerIdAsync(int customerId);
+		Task<GetOrderDto?> GetOrderByIdAsync(int orderId);
+		Task<GetOrderDto?> GetOrderByCustomerIdAsync(int customerId);
 		Task<int> CreateOrderAsync(int customerId, string ccNumber, DateTime ccExpiry);
 
 

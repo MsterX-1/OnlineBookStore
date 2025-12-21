@@ -28,13 +28,13 @@ namespace Application.Services
         {
             return await _orderRepo.GetAllOrdersAsync();
         }
-        public async Task<IEnumerable<GetOrderDto>> GetOrderByIdAsync(int orderId)
+        public async Task<GetOrderDto> GetOrderByIdAsync(int orderId)
         {
             return await _orderRepo.GetOrderByIdAsync(orderId);
         }
-        public async Task<IEnumerable<GetOrderDto>> GetOrdersByCustomerIdAsync(int customerId)
+        public async Task<GetOrderDto> GetOrdersByCustomerIdAsync(int customerId)
         {
-            return await _orderRepo.GetOrdersByCustomerIdAsync(customerId);
+            return await _orderRepo.GetOrderByCustomerIdAsync(customerId);
         }
         public async Task<int> CreateOrderAsync(int customerId, string ccNumber, DateTime ccExpiry)
         {
