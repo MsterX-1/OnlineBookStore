@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Dtos.OrderDto;
 using Application.Interfaces;
+using Domain.Models;
 
 namespace Application.Services
 {
@@ -22,6 +24,22 @@ namespace Application.Services
             _bookRepo = bookRepo;
             _userRepo = userRepo;
         }
-        //All the order related business logic will be implemented here
-    }
+        public async Task<IEnumerable<GetOrderDto>> GetAllOrdersAsync()
+        {
+            return await _orderRepo.GetAllOrdersAsync();
+        }
+        public async Task<IEnumerable<GetOrderDto>> GetOrderByIdAsync(int orderId)
+        {
+            return await _orderRepo.GetOrderByIdAsync(orderId);
+        }
+        public async Task<IEnumerable<GetOrderDto>> GetOrdersByCustomerIdAsync(int customerId)
+        {
+            return await _orderRepo.GetOrdersByCustomerIdAsync(customerId);
+        }
+        public async Task<int> CreateOrderAsync(int customerId, string ccNumber, DateTime ccExpiry)
+        {
+            return await _orderRepo.CreateOrderAsync(customerId,ccNumber,ccExpiry);
+		}
+       
+	}
 }

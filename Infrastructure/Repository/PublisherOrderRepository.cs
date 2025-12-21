@@ -14,10 +14,11 @@ namespace Infrastructure.Repository
     {
         private readonly DatabaseContext _context;
 
-        public PublisherOrderRepository(DatabaseContext context)
-        {
-            _context = context;
-        }
+		public PublisherOrderRepository(DatabaseContext context)
+		{
+			_context = context;
+		}
+			
 		public async Task<IEnumerable<PublisherOrder>> GetAllPublisherOrdersAsync()
         {
 
@@ -55,6 +56,22 @@ namespace Infrastructure.Repository
 			var rows = await db.ExecuteAsync(sql, new { PubOrderId = pubOrderId });
 			return rows > 0;
 		}
+		public async Task<int> CreateOrderAsync(CustomerOrder order)
+		{
+			using var db = _context.CreateConnection();
+
+			var sql = @"
+        INSERT INTO Customer_Order 
+        (Customer_ID, Order_Date, Total_Amount, CC_Number, CC_Expiry)
+        VALUES 
+        (@CustomerId, @OrderDate, @TotalAmount, @CCNumber, @CCExpiry);
+
+        SELECT CAST(SCOPE_IDENTITY() AS INT);
+    ";
+
+			return await db.ExecuteScalarAsync<int>(sql, order);
+		}
+
 
 	}
 }

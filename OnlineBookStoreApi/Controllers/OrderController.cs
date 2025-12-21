@@ -1,4 +1,5 @@
-﻿using Application.Services;
+﻿using Application.Dtos.OrderDto;
+using Application.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,57 @@ namespace OnlineBookStoreApi.Controllers
         {
             _orderService = orderService;
         }
-        // All Endpoints are created for Order Entity
-    }
+		[HttpGet("GetAllOrders")]
+		public async Task<IActionResult> GetAllOrders()
+		{
+			try
+			{
+				var orders = await _orderService.GetAllOrdersAsync();
+				return Ok(orders);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(ex.Message);
+			}
+		}
+		[HttpGet("GetOrder/{orderId}")]
+		public async Task<IActionResult> GetOrder(int orderId)
+		{
+			try
+			{
+				var order = await _orderService.GetOrderByIdAsync(orderId);
+				return Ok(order);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(ex.Message);
+			}
+		}
+		[HttpGet("GetOrdersByCustomer/{customerId}")]
+		public async Task<IActionResult> GetOrdersByCustomer(int customerId)
+		{
+			try
+			{
+				var orders = await _orderService.GetOrdersByCustomerIdAsync(customerId);
+				return Ok(orders);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(ex.Message);
+			}
+		}
+		[HttpPost("PlaceOrder")]
+		public async Task<IActionResult> PlaceOrder([FromBody] CreateOrderDto dto)
+		{
+			try
+			{
+				var response = await _orderService.CreateOrderAsync(dto.CustomerId,dto.CCNumber,dto.CCExpiry);
+				return Ok(response);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+	}
 }

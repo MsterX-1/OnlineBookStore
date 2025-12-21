@@ -6,17 +6,12 @@ using System.Threading.Tasks;
 
 namespace Application.Dtos.OrderDto
 {
-	public class GetOrderDto
+	public class GetOrderItemDto
 	{
-		public int Order_Id { get; set; }
-		public int Customer_Id { get; set; }
-		public string? CustomerName { get; set; }
-		public DateTime Order_Date { get; set; }
-		public decimal Total_Amount { get; set; }
 		public int Item_Id { get; set; }
 		public string? ISBN { get; set; }
 		public int Quantity { get; set; }
 		public decimal Unit_Price { get; set; }
+		
 	}
-
 }
