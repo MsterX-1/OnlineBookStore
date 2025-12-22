@@ -161,23 +161,17 @@ namespace Infrastructure.Repository
 
 			// Step 1: Insert order and get OrderId
 			var sql = @"
-    INSERT INTO Customer_Order (Customer_ID, Order_Date, Total_Amount, CC_Number, CC_Expiry)
-    VALUES (
-        @CustomerId,
-        GETDATE(),
-        COALESCE(
-            (SELECT SUM(sc.Quantity * b.Price)
-             FROM Shopping_Cart sc
-             JOIN Book b ON sc.ISBN = b.ISBN
-             WHERE sc.Customer_ID = @CustomerId),
-            0
-        ),
-        @CCNumber,
-        @CCExpiry
-    );
-
-    SELECT CAST(SCOPE_IDENTITY() AS INT);
-";
+						INSERT INTO Customer_Order (Customer_ID, Order_Date, Total_Amount, CC_Number, CC_Expiry)
+						VALUES (
+							@CustomerId,
+							GETDATE(),
+							(SELECT SUM(sc.Quantity * b.Price)
+							 FROM Shopping_Cart sc
+							 JOIN Book b ON sc.ISBN = b.ISBN
+							 WHERE sc.Customer_ID = @CustomerId),
+							@CCNumber,
+							@CCExpiry);
+					   SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
 			var orderId = await db.ExecuteScalarAsync<int>(sql, new
 			{

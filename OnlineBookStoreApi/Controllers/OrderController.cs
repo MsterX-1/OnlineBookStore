@@ -60,7 +60,7 @@ namespace OnlineBookStoreApi.Controllers
 			try
 			{
 				var response = await _orderService.CreateOrderAsync(dto.CustomerId,dto.CCNumber,dto.CCExpiry);
-				return Ok(response);
+				return Ok(new { OrderID = response, Messege = "Order Placed Successfully" });
 			}
 			catch (Exception ex)
 			{

@@ -38,6 +38,16 @@ namespace Application.Services
         }
         public async Task<int> CreateOrderAsync(int customerId, string ccNumber, DateTime ccExpiry)
         {
+            //check if customer exists
+            var customer = await _userRepo.GetUserByIdAsync(customerId);
+            if (customer == null)
+                throw new ArgumentException("Invalid customer ID.");
+            
+            // Check if cart is not empty
+            var cartItems = await _cartRepo.GetCartItemsByCustomerIdAsync(customerId);
+            if (cartItems == null || !cartItems.Any())
+                throw new InvalidOperationException("Shopping cart is empty. Cannot place order.");
+            
             return await _orderRepo.CreateOrderAsync(customerId,ccNumber,ccExpiry);
 		}
        
