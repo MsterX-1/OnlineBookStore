@@ -55,16 +55,16 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
-		[HttpDelete("RemoveFromCart/{cartId}")]
-		public async Task<IActionResult> RemoveFromCart(int cartId)
+		[HttpDelete("DeleteCart/{cartId}")]
+		public async Task<IActionResult> DeleteCart(int cartId)
 		{
 			try
 			{
-				var result = await _cartService.RemoveItemFromCartAsync(cartId);
+				var result = await _cartService.RemoveCartAsync(cartId);
 				if (result)
-					return Ok(new { Message = "Item removed from cart successfully" });
+					return Ok(new { Message = "Cart Deleted successfully" });
 				else
-					return NotFound("Cart item not found.");
+					return NotFound("Cart not found.");
 			}
 			catch (Exception ex)
 			{

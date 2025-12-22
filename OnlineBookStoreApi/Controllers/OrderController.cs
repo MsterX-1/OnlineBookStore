@@ -54,7 +54,20 @@ namespace OnlineBookStoreApi.Controllers
 				return NotFound(ex.Message);
 			}
 		}
-		[HttpPost("PlaceOrder")]
+		[HttpGet("GetOrderDetails/{orderId}")]
+		public async Task<IActionResult> GetOrderDetails(int orderId)
+		{
+			try
+			{
+				var orderDetails = await _orderService.GetOrderItemsByOrderIdAsync(orderId);
+				return Ok(orderDetails);
+			}
+			catch (Exception ex)
+			{
+				return NotFound(ex.Message);
+			}
+        }
+        [HttpPost("PlaceOrder")]
 		public async Task<IActionResult> PlaceOrder([FromBody] CreateOrderDto dto)
 		{
 			try

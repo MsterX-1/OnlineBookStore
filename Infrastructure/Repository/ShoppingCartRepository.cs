@@ -73,7 +73,7 @@ namespace Infrastructure.Repository
             var rows = await db.ExecuteAsync(sql, cartItem);
             return rows > 0;
         }
-        public async Task<bool> RemoveFromCartAsync(int cartId)
+        public async Task<bool> RemoveCartAsync(int cartId)
         {
             using var db = _context.CreateConnection();
             var sql = "DELETE FROM Shopping_Cart WHERE Cart_ID = @CartId";

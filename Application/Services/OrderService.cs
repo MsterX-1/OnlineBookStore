@@ -26,15 +26,24 @@ namespace Application.Services
         }
         public async Task<IEnumerable<GetOrderDto>> GetAllOrdersAsync()
         {
-            return await _orderRepo.GetAllOrdersAsync();
+            var orders = await _orderRepo.GetAllOrdersAsync();
+            if (orders == null || !orders.Any())
+                throw new InvalidOperationException("No orders found.");
+            return orders;
         }
         public async Task<GetOrderDto> GetOrderByIdAsync(int orderId)
         {
-            return await _orderRepo.GetOrderByIdAsync(orderId);
+            var order =  await _orderRepo.GetOrderByIdAsync(orderId);
+            if (order == null)
+                throw new ArgumentException("Order not found.");
+            return order;
         }
-        public async Task<GetOrderDto> GetOrdersByCustomerIdAsync(int customerId)
+        public async Task<IEnumerable<GetOrderDto>> GetOrdersByCustomerIdAsync(int customerId)
         {
-            return await _orderRepo.GetOrderByCustomerIdAsync(customerId);
+            var orders =  await _orderRepo.GetOrdersByCustomerIdAsync(customerId);
+            if (orders == null || !orders.Any())
+                throw new ArgumentException("No orders found for the specified customer.");
+            return orders;
         }
         public async Task<int> CreateOrderAsync(int customerId, string ccNumber, DateTime ccExpiry)
         {
@@ -50,6 +59,13 @@ namespace Application.Services
             
             return await _orderRepo.CreateOrderAsync(customerId,ccNumber,ccExpiry);
 		}
-       
-	}
+        public async Task<IEnumerable<GetOrderItemDto>> GetOrderItemsByOrderIdAsync(int orderId)
+        {
+            var orderItems = await _orderRepo.GetOrderItemsByOrderIdAsync(orderId);
+            if (orderItems == null || !orderItems.Any())
+                throw new ArgumentException("No items found for the specified order.");
+            return orderItems;
+        }
+
+    }
 }

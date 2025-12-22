@@ -12,8 +12,9 @@ namespace Application.Interfaces
     {
 		Task<IEnumerable<GetOrderDto>> GetAllOrdersAsync();
 		Task<GetOrderDto?> GetOrderByIdAsync(int orderId);
-		Task<GetOrderDto?> GetOrderByCustomerIdAsync(int customerId);
+		Task<IEnumerable<GetOrderDto?>> GetOrdersByCustomerIdAsync(int customerId);
 		Task<int> CreateOrderAsync(int customerId, string ccNumber, DateTime ccExpiry);
+		Task<IEnumerable<GetOrderItemDto>> GetOrderItemsByOrderIdAsync(int orderId);
 
 
 	}

@@ -12,9 +12,8 @@ namespace Application.Dtos.OrderDto
 		public int Customer_ID { get; set; }
 		public DateTime Order_Date { get; set; }
 		public decimal Total_Amount { get; set; }
-		public string CustomerName { get; set; } = "";
+		public string CustomerName { get; set; }
 
-		public List<GetOrderItemDto> Items { get; set; } = new();
 	}
 
 }

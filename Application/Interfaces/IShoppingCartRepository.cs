@@ -14,7 +14,7 @@ namespace Application.Interfaces
 		Task<GetCartDto?> GetCartItemAsync(int cartId);
 		Task<int> AddToCartAsync(ShoppingCart cartItem);
 		Task<bool> UpdateCartItemAsync(ShoppingCart cartItem);
-		Task<bool> RemoveFromCartAsync(int cartId);
+		Task<bool> RemoveCartAsync(int cartId);
 		Task<bool> ClearCartAsync(int customerId);
 		Task<ShoppingCart?> GetCartItemByCustomerAndISBNAsync(int customerId, string isbn);
 	}

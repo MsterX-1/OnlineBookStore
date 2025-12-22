@@ -35,9 +35,22 @@ namespace Application.Services
 			if (book == null)
 				throw new Exception("Book not found.");
 
-			return await _cartRepo.AddToCartAsync(dto.ConvertToShoppingCartModel());
+            //check if item already exists in cart
+			var existingCartItem = await _cartRepo.GetCartItemByCustomerAndISBNAsync(dto.CustomerId, dto.ISBN);
+			if (existingCartItem == null)
+                return await _cartRepo.AddToCartAsync(dto.ConvertToShoppingCartModel());
+            
+            var shoppingCartItem = new ShoppingCart
+            {
+                Cart_ID = existingCartItem.Cart_ID,
+                Customer_ID = existingCartItem.Customer_ID,
+                ISBN = existingCartItem.ISBN,
+                Quantity = existingCartItem.Quantity + dto.Quantity
+            };
+             await _cartRepo.UpdateCartItemAsync(shoppingCartItem);
+			return existingCartItem.Cart_ID;
 
-		}
+        }
 		public async Task<bool> UpdateCartItemAsync(UpdateCartDto cartDto)
 		{
 			var cartItem = await _cartRepo.GetCartItemAsync(cartDto.CartId);
@@ -46,12 +59,12 @@ namespace Application.Services
 			cartItem.Quantity = cartDto.Quantity;
 			return await _cartRepo.UpdateCartItemAsync(cartItem.ConvertToShoppingCartModel());
 		}
-		public async Task<bool> RemoveItemFromCartAsync(int cartId)
+		public async Task<bool> RemoveCartAsync(int cartId)
 		{
 			var cartItem = await _cartRepo.GetCartItemAsync(cartId);
 			if (cartItem == null)
-				throw new Exception("Cart item not found.");
-			return await _cartRepo.RemoveFromCartAsync(cartId);
+				throw new Exception("Cart not found.");
+			return await _cartRepo.RemoveCartAsync(cartId);
 		}
 		public async Task<bool> ClearCustomerCartAsync(int customerId)
 		{
