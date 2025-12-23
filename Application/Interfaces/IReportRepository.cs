@@ -11,5 +11,8 @@ namespace Application.Interfaces
     {
         // Define method signatures for report repository operations
         Task<IEnumerable<TotalSalesDto?>> GetTotalSalesForPreviousMonthAsync();
+        Task<IEnumerable<TotalSalesForDateDto?>> GetTotalSalesForDateAsync(DateTime date);
+        Task<IEnumerable<TopTenBooks?>> GetTopTenBooksAsync();
+       // Task<BookOrderCountDto?> GetBookOrderCountAsync(string isbn);
     }
 }

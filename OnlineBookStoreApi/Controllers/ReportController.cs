@@ -29,5 +29,31 @@ namespace OnlineBookStoreApi.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [HttpGet("GetTotalSalesForDate/{date}")]
+        public async Task<IActionResult> GetTotalSalesForDate(DateTime date)
+        {
+            try
+            {
+                var report = await _reportService.GetTotalSalesForDateAsync(date);
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+        [HttpGet("GetTopTenBooks")]
+        public async Task<IActionResult> GetTopTenBooks()
+        {
+            try
+            {
+                var report = await _reportService.GetTopTenBooksAsync();
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
     }
 }
