@@ -8,5 +8,8 @@ namespace Application.Dtos.ReportDto
 {
     public class TotalSalesDto
     {
+        public decimal TotalSales { get; set; }
+        public int TotalOrders { get; set; }
+        public int TotalItemsSold { get; set; }
     }
 }

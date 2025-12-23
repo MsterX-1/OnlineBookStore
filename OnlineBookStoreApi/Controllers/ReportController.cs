@@ -15,5 +15,19 @@ namespace OnlineBookStoreApi.Controllers
             _reportService = reportService;
         }
         // All Endpoints are created for Report Entity
+    
+        [HttpGet("GetTotalSalesForPreviousMonth")]
+        public async Task<IActionResult> GetTotalSalesForPreviousMonth()
+        {
+            try
+            {
+                var report = await _reportService.GetTotalSalesForPreviousMonthAsync();
+                return Ok(report);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
     }
 }
