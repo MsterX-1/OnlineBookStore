@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Application.Dtos.ReportDto
 {
-    public class TopTenBooks
+    public class BookOrderCountDto
     {
         public string? ISBN { get; set; }
         public string? Title { get; set; }
-        public string? Category { get; set; }
-        public int TotalCopiesSold { get; set; }
-        public decimal TotalRevenue { get; set; }
-
+        public int TotalTimesOrdered { get; set; }
+        public int TotalQuantityOrdered { get; set; }
+        public int PendingOrders { get; set; }
+        public int ConfirmedOrders { get; set; }
     }
 }

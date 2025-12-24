@@ -9,10 +9,10 @@ namespace Application.Interfaces
 {
     public interface IReportRepository
     {
-        // Define method signatures for report repository operations
-        Task<IEnumerable<TotalSalesDto?>> GetTotalSalesForPreviousMonthAsync();
-        Task<IEnumerable<TotalSalesForDateDto?>> GetTotalSalesForDateAsync(DateTime date);
-        Task<IEnumerable<TopTenBooks?>> GetTopTenBooksAsync();
-       // Task<BookOrderCountDto?> GetBookOrderCountAsync(string isbn);
+        Task<TotalSalesDto> GetTotalSalesForPreviousMonthAsync();
+        Task<TotalSalesDto> GetTotalSalesForSpecificDateAsync(DateTime date);
+        Task<IEnumerable<TopCustomerDto>> GetTop5CustomersLast3MonthsAsync();
+        Task<IEnumerable<TopSellingBookDto>> GetTop10SellingBooksLast3MonthsAsync();
+        Task<BookOrderCountDto?> GetBookOrderCountAsync(string isbn);
     }
 }

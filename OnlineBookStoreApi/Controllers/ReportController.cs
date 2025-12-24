@@ -15,40 +15,71 @@ namespace OnlineBookStoreApi.Controllers
             _reportService = reportService;
         }
         // All Endpoints are created for Report Entity
-    
-        [HttpGet("GetTotalSalesForPreviousMonth")]
-        public async Task<IActionResult> GetTotalSalesForPreviousMonth()
+
+        [HttpGet("TotalSalesPreviousMonth")]
+        public async Task<IActionResult> GetTotalSalesPreviousMonth()
         {
             try
             {
-                var report = await _reportService.GetTotalSalesForPreviousMonthAsync();
-                return Ok(report);
+                var sales = await _reportService.GetTotalSalesForPreviousMonthAsync();
+                return Ok(sales);
             }
             catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }
         }
-        [HttpGet("GetTotalSalesForDate/{date}")]
-        public async Task<IActionResult> GetTotalSalesForDate(DateTime date)
+
+        // Specific Date to get Total Sales like yyyy-mm-dd
+        [HttpGet("TotalSalesForDate")]
+        public async Task<IActionResult> GetTotalSalesForDate([FromQuery] DateTime date)
         {
             try
             {
-                var report = await _reportService.GetTotalSalesForDateAsync(date);
-                return Ok(report);
+                var sales = await _reportService.GetTotalSalesForSpecificDateAsync(date);
+                return Ok(sales);
             }
             catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }
         }
-        [HttpGet("GetTopTenBooks")]
-        public async Task<IActionResult> GetTopTenBooks()
+
+        [HttpGet("Top5Customers")]
+        public async Task<IActionResult> GetTop5Customers()
         {
             try
             {
-                var report = await _reportService.GetTopTenBooksAsync();
-                return Ok(report);
+                var customers = await _reportService.GetTop5CustomersLast3MonthsAsync();
+                return Ok(customers);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("Top10SellingBooks")]
+        public async Task<IActionResult> GetTop10SellingBooks()
+        {
+            try
+            {
+                var books = await _reportService.GetTop10SellingBooksLast3MonthsAsync();
+                return Ok(books);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet("BookOrderCount/{isbn}")]
+        public async Task<IActionResult> GetBookOrderCount(string isbn)
+        {
+            try
+            {
+                var orderCount = await _reportService.GetBookOrderCountAsync(isbn);
+                return Ok(orderCount);
             }
             catch (Exception ex)
             {
