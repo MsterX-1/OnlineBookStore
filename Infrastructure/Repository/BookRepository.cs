@@ -24,13 +24,13 @@ namespace Infrastructure.Repository
         public async Task<IEnumerable<GetBookDto>> GetAllBooksAsync()
         {
             using var db = _context.CreateConnection();
-            var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
+            var sql = @"Select b.ISBN,b.Title,b.Description,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
                         b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
+                        Group by b.ISBN,b.Title,b.Description,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
                         ORDER BY b.Title;";
             return await db.QueryAsync<GetBookDto>(sql);
         }
@@ -38,28 +38,28 @@ namespace Infrastructure.Repository
         public async Task<GetBookDto?> GetBookByISBNAsync(string isbn)
         {
             using var db = _context.CreateConnection();
-            var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
+            var sql = @"Select b.ISBN,b.Title,b.Description,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
                         b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
                         Where b.ISBN=@ISBN
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto";
+                        Group by b.ISBN,b.Title,b.Description,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto";
             return await db.QueryFirstOrDefaultAsync<GetBookDto>(sql, new { ISBN = isbn });
         }
 
         public async Task<IEnumerable<GetBookDto?>> GetBooksByCategoryAsync(string category)
         {
             using var db = _context.CreateConnection();
-            var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
+            var sql = @"Select b.ISBN,b.Title,b.Description,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
                         b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
                         Where b.Category=@cat
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
+                        Group by b.ISBN,b.Title,b.Description,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
                         ORDER BY b.Title;";
             return await db.QueryAsync<GetBookDto>(sql, new { cat = category });
         }
@@ -67,14 +67,14 @@ namespace Infrastructure.Repository
         public async Task<IEnumerable<GetBookDto?>> SearchBooksByTitleAsync(string title)
         {
             using var db = _context.CreateConnection();
-            var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
+            var sql = @"Select b.ISBN,b.Title,b.Description,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
                         b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
                         Where b.Title LIKE '%' + @Title + '%'
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
+                        Group by b.ISBN,b.Title,b.Description,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
                         ORDER BY b.Title;";
             return await db.QueryAsync<GetBookDto>(sql, new { Title = title });
         }
@@ -82,14 +82,14 @@ namespace Infrastructure.Repository
         public async Task<IEnumerable<GetBookDto?>> GetLowStockBooksAsync()
         {
             using var db = _context.CreateConnection();
-            var sql = @"Select b.ISBN,b.Title,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
+            var sql = @"Select b.ISBN,b.Title,b.Description,b.Pub_Year AS PubYear,b.Category,b.Price,b.Stock_Qty AS StockQty,
                         b.Threshold,p.Name As PublisherName,STRING_AGG(a.Name,',')As Authors,b.BookPhoto
                         FROM Book as b
                         Left join Publisher p on b.Publisher_ID=p.Publisher_ID
                         Left join Book_Author ba on b.ISBN=ba.ISBN
                         Left join Author a on ba.Author_ID=a.Author_ID
                         Where b.Stock_Qty < b.Threshold
-                        Group by b.ISBN,b.Title,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
+                        Group by b.ISBN,b.Title,b.Description,b.Pub_Year,b.Category,b.Price,b.Stock_Qty,b.Threshold,p.Name,b.BookPhoto
                         ORDER BY b.Stock_Qty ASC, b.Title;";
             return await db.QueryAsync<GetBookDto>(sql);
         }
@@ -97,8 +97,8 @@ namespace Infrastructure.Repository
         {
             using var db = _context.CreateConnection();
             var sql = @"
-                INSERT INTO Book (ISBN, Title, Pub_Year, Price, Category, Stock_Qty, Threshold, Publisher_ID)
-                VALUES (@ISBN, @Title, @Pub_Year, @Price, @Category, @Stock_Qty, @Threshold, @Publisher_ID)";
+                INSERT INTO Book (ISBN, Title, Pub_Year, Price, Category, Stock_Qty, Threshold, Publisher_ID,Description)
+                VALUES (@ISBN, @Title, @Pub_Year, @Price, @Category, @Stock_Qty, @Threshold, @Publisher_ID, @Description)";
             var rows = await db.ExecuteAsync(sql, book);
             return rows > 0;
         }
@@ -114,7 +114,8 @@ namespace Infrastructure.Repository
                     Category = @Category, 
                     Stock_Qty = @Stock_Qty, 
                     Threshold = @Threshold, 
-                    Publisher_ID = @Publisher_ID
+                    Publisher_ID = @Publisher_ID,
+                    Description = @Description
                 WHERE ISBN = @ISBN";
             var rows = await db.ExecuteAsync(sql, book);
             return rows > 0;
@@ -157,6 +158,7 @@ namespace Infrastructure.Repository
                 SELECT 
                     b.ISBN,
                     b.Title,
+                    b.Description,
                     b.Pub_Year AS PubYear,
                     b.Category,
                     b.Price,
@@ -176,7 +178,7 @@ namespace Infrastructure.Repository
                     AND (@Category IS NULL OR b.Category = @Category)
                     AND (@PublisherName IS NULL OR p.Name LIKE '%' + @PublisherName + '%')
                     AND (@AuthorName IS NULL OR a.Name LIKE '%' + @AuthorName + '%')
-                GROUP BY b.ISBN, b.Title, b.Pub_Year, b.Category, b.Price, 
+                GROUP BY b.ISBN, b.Title,b.Description, b.Pub_Year, b.Category, b.Price, 
                          b.Stock_Qty, b.Threshold, b.Publisher_ID, p.Name,b.BookPhoto
                 ORDER BY b.Title";
 

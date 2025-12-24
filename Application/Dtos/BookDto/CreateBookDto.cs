@@ -10,6 +10,7 @@ namespace Application.Dtos.BookDto
     {
         public required string ISBN { get; set; }
         public required string Title { get; set; }
+        public string? Description { get; set; }
         public int? PubYear { get; set; }
         public decimal Price { get; set; }
         public required string Category { get; set; }

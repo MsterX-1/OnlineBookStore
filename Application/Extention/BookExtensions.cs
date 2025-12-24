@@ -16,6 +16,7 @@ namespace Application.Extention
             {
                 ISBN = createBookDto.ISBN,
                 Title = createBookDto.Title,
+                Description = createBookDto.Description,
                 Pub_Year = createBookDto.PubYear,
                 Price = createBookDto.Price,
                 Category = createBookDto.Category,

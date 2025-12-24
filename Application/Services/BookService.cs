@@ -84,6 +84,7 @@ namespace Application.Services
             // Update book properties
             book.Title = dto.Title ?? book.Title;
             book.Pub_Year = dto.PubYear ?? book.Pub_Year;
+            book.Description = dto.Description ?? book.Description;
             book.Category = dto.Category ?? book.Category;
             book.Price = dto.Price ?? book.Price;
             book.Stock_Qty = dto.StockQty ?? book.Stock_Qty;
