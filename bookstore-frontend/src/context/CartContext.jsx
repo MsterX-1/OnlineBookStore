@@ -1,6 +1,7 @@
 // src/context/CartContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { cartApi } from '../api/cartApi';
+import { bookApi } from '../api/bookApi';
 import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
 
@@ -51,11 +52,50 @@ export const CartProvider = ({ children }) => {
     }
 
     try {
+      // Safely fetch latest cart (handle 404 when cart doesn't exist yet)
+      let latestCart = [];
+      try {
+        const cartResp = await cartApi.getCart(user.userid);
+        latestCart = cartResp.data || [];
+      } catch (err) {
+        if (err.response?.status === 404) {
+          latestCart = [];
+        } else {
+          throw err;
+        }
+      }
+
+      // Safely fetch book to get stock info
+      let stockQty = Infinity;
+      try {
+        const bookResp = await bookApi.getBookByISBN(isbn);
+        stockQty = bookResp?.data?.stockQty ?? Infinity;
+      } catch (err) {
+        console.error('Error fetching book data:', err);
+        // If book lookup fails, fall back to allowing the add and let server-side enforce stock
+      }
+
+      const existing = latestCart.find(ci => ci.isbn === isbn);
+      const existingQty = existing?.quantity || 0;
+
+      const allowed = stockQty - existingQty;
+      if (allowed <= 0) {
+        toast.error(`Only ${stockQty} copies available`);
+        return;
+      }
+
+      const toAdd = Math.min(quantity, allowed);
+
+      if (toAdd < quantity) {
+        toast.error(`Only ${stockQty} copies available; adding ${toAdd} instead`);
+      }
+
       await cartApi.addToCart({
         customerId: user.userid,
         isbn,
-        quantity,
+        quantity: toAdd,
       });
+
       await fetchCart();
       toast.success('Item added to cart');
     } catch (error) {
@@ -72,6 +112,39 @@ export const CartProvider = ({ children }) => {
     }
 
     try {
+      // Fetch latest cart to get item details; handle missing cart
+      let latestCart = [];
+      try {
+        const cartResp = await cartApi.getCart(user.userid);
+        latestCart = cartResp.data || [];
+      } catch (err) {
+        if (err.response?.status === 404) {
+          toast.error('Cart not found');
+          return;
+        }
+        throw err;
+      }
+
+      const item = latestCart.find(ci => ci.cartId === cartId);
+      if (!item) {
+        toast.error('Cart item not found');
+        return;
+      }
+
+      // Fetch book stock info
+      let stockQty = Infinity;
+      try {
+        const bookResp = await bookApi.getBookByISBN(item.isbn);
+        stockQty = bookResp?.data?.stockQty ?? Infinity;
+      } catch (err) {
+        console.error('Error fetching book data:', err);
+      }
+
+      if (quantity > stockQty) {
+        toast.error(`Only ${stockQty} copies available; setting to ${stockQty}`);
+        quantity = stockQty;
+      }
+
       await cartApi.updateCartItem({ cartId, quantity });
       await fetchCart();
       toast.success('Cart updated');

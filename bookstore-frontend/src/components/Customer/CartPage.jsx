@@ -4,13 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { FiTrash2, FiShoppingBag } from 'react-icons/fi';
 import LoadingSpinner from '../Common/LoadingSpinner';
+import toast from 'react-hot-toast';
 
 function CartPage() {
   const navigate = useNavigate();
   const { cartItems, loading, updateCartItem, removeFromCart, getCartTotal } = useCart();
 
-  const handleQuantityChange = async (cartId, newQuantity) => {
+  const handleQuantityChange = async (cartId, newQuantity, stockQty) => {
     if (newQuantity < 1) return;
+    const max = stockQty ?? Infinity;
+
+    if (newQuantity > max) {
+      toast.error(`Only ${max} copies available`);
+      newQuantity = max;
+    }
+
     try {
       await updateCartItem(cartId, newQuantity);
     } catch (error) {
@@ -61,7 +69,7 @@ function CartPage() {
                   <div className="flex items-center gap-4">
                     <div className="flex items-center border border-gray-300 rounded-lg">
                       <button
-                        onClick={() => handleQuantityChange(item.cartId, item.quantity - 1)}
+                        onClick={() => handleQuantityChange(item.cartId, item.quantity - 1, item.stockQty ?? item.book?.stockQty)}
                         className="px-3 py-1 hover:bg-gray-100 transition"
                         disabled={item.quantity <= 1}
                       >
@@ -70,13 +78,17 @@ function CartPage() {
                       <input
                         type="number"
                         value={item.quantity}
-                        onChange={(e) => handleQuantityChange(item.cartId, parseInt(e.target.value) || 1)}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value) || 1;
+                          handleQuantityChange(item.cartId, v, item.stockQty ?? item.book?.stockQty);
+                        }}
                         className="w-16 text-center border-x border-gray-300 py-1 focus:outline-none"
                         min="1"
                       />
                       <button
-                        onClick={() => handleQuantityChange(item.cartId, item.quantity + 1)}
+                        onClick={() => handleQuantityChange(item.cartId, item.quantity + 1, item.stockQty ?? item.book?.stockQty)}
                         className="px-3 py-1 hover:bg-gray-100 transition"
+                        disabled={item.quantity >= (item.stockQty ?? item.book?.stockQty ?? Infinity)}
                       >
                         +
                       </button>

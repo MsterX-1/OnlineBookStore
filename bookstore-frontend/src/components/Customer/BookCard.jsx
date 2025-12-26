@@ -8,8 +8,10 @@ import { FiEye } from 'react-icons/fi';
 
 function BookCard({ book }) {
   const { user } = useAuth();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems } = useCart();
   const [adding, setAdding] = useState(false);
+
+  const existingInCart = cartItems?.find(c => c.isbn === book.isbn)?.quantity || 0;
   const [showModal, setShowModal] = useState(false);
 
   const handleAddToCart = async (e) => {
@@ -22,6 +24,11 @@ function BookCard({ book }) {
 
     if (book.stockQty === 0) {
       toast.error('This book is out of stock');
+      return;
+    }
+
+    if (existingInCart >= book.stockQty) {
+      toast.error(`Only ${book.stockQty} copies available`);
       return;
     }
 
@@ -109,7 +116,7 @@ function BookCard({ book }) {
             <div className="flex gap-2">
               <button
                 onClick={handleAddToCart}
-                disabled={adding || book.stockQty === 0}
+                disabled={adding || book.stockQty === 0 || existingInCart >= book.stockQty}
                 className="flex-1 btn-primary disabled:opacity-50"
               >
                 {adding ? (
