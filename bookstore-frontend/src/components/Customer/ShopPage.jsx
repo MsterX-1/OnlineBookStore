@@ -175,7 +175,7 @@ function ShopPage() {
             >
               <option value="">All Authors</option>
               {authors.map((author) => (
-                <option key={author.authorId} value={author.name}>{author.name}</option>
+                <option key={author.authorId ?? author.author_ID ?? author.id} value={author.name}>{author.name}</option>
               ))}
             </select>
           </div>

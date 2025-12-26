@@ -24,6 +24,7 @@ function AuthorManagement() {
   const fetchAuthors = async () => {
     try {
       const response = await authorApi.getAllAuthors();
+      console.debug('[AuthorManagement] getAllAuthors response:', response.data);
       setAuthors(response.data);
     } catch (error) {
       toast.error('Failed to fetch authors');
@@ -35,8 +36,15 @@ function AuthorManagement() {
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
       if (editingAuthor) {
-        await authorApi.updateAuthor({ id: editingAuthor.authorId, name: values.name });
-        toast.success('Author updated successfully');
+        const idToSend = editingAuthor?.authorId ?? editingAuthor?.author_ID ?? editingAuthor?.id ?? editingAuthor?.Author_ID;
+        if (idToSend == null) {
+          console.error('[AuthorManagement] cannot update author — id missing on', editingAuthor);
+          toast.error('Author id missing — cannot update');
+        } else {
+          console.debug('[AuthorManagement] updateAuthor payload:', { id: idToSend, name: values.name });
+          await authorApi.updateAuthor({ id: idToSend, name: values.name });
+          toast.success('Author updated successfully');
+        }
       } else {
         await authorApi.createAuthor(values);
         toast.success('Author created successfully');
@@ -46,6 +54,7 @@ function AuthorManagement() {
       setEditingAuthor(null);
       fetchAuthors();
     } catch (error) {
+      console.error('[AuthorManagement] update/create error:', error);
       toast.error(error.response?.data?.message || 'Operation failed');
     } finally {
       setSubmitting(false);
@@ -96,8 +105,8 @@ function AuthorManagement() {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {authors.map((author) => (
-              <tr key={author.authorId} className="hover:bg-gray-50">
-                <td className="px-6 py-4 text-sm text-gray-800">{author.authorId}</td>
+              <tr key={author.authorId ?? author.author_ID ?? author.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 text-sm text-gray-800">{author.authorId ?? author.author_ID ?? author.id}</td>
                 <td className="px-6 py-4 text-sm font-medium text-gray-900">{author.name}</td>
                 <td className="px-6 py-4 text-right text-sm">
                   <button
@@ -107,14 +116,14 @@ function AuthorManagement() {
                     <FiEdit2 className="inline" /> Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(author.authorId)}
+                    onClick={() => handleDelete(author.authorId ?? author.author_ID ?? author.id)}
                     className="text-red-600 hover:text-red-800"
                   >
                     <FiTrash2 className="inline" /> Delete
                   </button>
                 </td>
               </tr>
-            ))}
+            ))}  
           </tbody>
         </table>
       </div>

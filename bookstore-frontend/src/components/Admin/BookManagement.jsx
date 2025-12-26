@@ -32,6 +32,9 @@ function BookManagement() {
   const [bookPhoto, setBookPhoto] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
 
+  // Helper to get a stable author identifier (supports many API naming variants)
+  const getAuthorId = (author) => author?.authorId ?? author?.author_ID ?? author?.Author_ID ?? author?.AuthorID ?? author?.authorID ?? author?.id ?? author?._id ?? author?.ID;
+
   const categories = ['Science', 'Art', 'Religion', 'History', 'Geography'];
 
   useEffect(() => {
@@ -47,7 +50,20 @@ function BookManagement() {
       ]);
       setBooks(booksRes.data);
       setPublishers(publishersRes.data);
-      setAuthors(authorsRes.data);
+      // Normalize authors so each author has an `authorId` field
+      const normalizedAuthors = (authorsRes.data || []).map((a, idx) => {
+        const id = a?.authorId ?? a?.author_ID ?? a?.Author_ID ?? a?.AuthorID ?? a?.authorID ?? a?.id ?? a?._id ?? a?.ID;
+        return {
+          ...a,
+          authorId: id
+        };
+      });
+      const missingIdAuthors = normalizedAuthors.filter(a => a.authorId == null);
+      if (missingIdAuthors.length) {
+        console.warn('[BookManagement] Received authors without an id from API:', missingIdAuthors);
+      }
+      console.debug('[BookManagement] normalizedAuthors:', normalizedAuthors);
+      setAuthors(normalizedAuthors);
     } catch (error) {
       toast.error('Failed to fetch data');
     } finally {
@@ -62,7 +78,7 @@ function BookManagement() {
     const authorNames = authorsString.split(',').map(name => name.trim());
     const authorIds = authors
       .filter(author => authorNames.includes(author.name))
-      .map(author => author.authorId);
+      .map(author => String(getAuthorId(author)));
     
     return authorIds;
   };
@@ -113,9 +129,10 @@ function BookManagement() {
         }
 
         if (selectedAuthors.length > 0) {
-          for (const authorId of selectedAuthors) {
+          for (const authorIdStr of selectedAuthors) {
+            const authorIdToSend = isNaN(Number(authorIdStr)) ? authorIdStr : Number(authorIdStr);
             try {
-              await bookApi.addBookAuthors({ isbn: values.isbn, authorId });
+              await bookApi.addBookAuthors({ isbn: values.isbn, authorId: authorIdToSend });
             } catch (error) {
               console.log('Author might already be linked');
             }
@@ -131,8 +148,9 @@ function BookManagement() {
         }
 
         if (selectedAuthors.length > 0) {
-          for (const authorId of selectedAuthors) {
-            await bookApi.addBookAuthors({ isbn: values.isbn, authorId });
+          for (const authorIdStr of selectedAuthors) {
+            const authorIdToSend = isNaN(Number(authorIdStr)) ? authorIdStr : Number(authorIdStr);
+            await bookApi.addBookAuthors({ isbn: values.isbn, authorId: authorIdToSend });
           }
         }
 
@@ -171,13 +189,15 @@ function BookManagement() {
     
     if (!window.confirm('Remove this author from the book?')) return;
 
+    const idToSend = isNaN(Number(authorId)) ? authorId : Number(authorId);
+
     try {
       await bookApi.removeBookAuthors({ 
         isbn: editingBook.isbn, 
-        authorId 
+        authorId: idToSend
       });
       
-      setExistingAuthors(prev => prev.filter(id => id !== authorId));
+      setExistingAuthors(prev => prev.filter(id => id !== String(authorId)));
       toast.success('Author removed successfully');
       fetchData();
     } catch (error) {
@@ -211,19 +231,38 @@ function BookManagement() {
   };
 
   const toggleAuthor = (authorId) => {
-    setSelectedAuthors(prev => 
-      prev.includes(authorId) 
-        ? prev.filter(id => id !== authorId)
-        : [...prev, authorId]
-    );
+    console.debug('[BookManagement] toggleAuthor called with:', authorId);
+    if (authorId == null) { console.debug('[BookManagement] toggleAuthor ignored null/undefined'); return; } // ignore undefined/null ids
+    const idStr = String(authorId);
+    setSelectedAuthors(prev => {
+      console.debug('[BookManagement] prev selectedAuthors:', prev);
+      const result = prev.includes(idStr) ? prev.filter(id => id !== idStr) : [...prev, idStr];
+      console.debug('[BookManagement] new selectedAuthors:', result);
+      return result;
+    });
   };
 
-  const availableAuthors = authors.filter(
-    author => !existingAuthors.includes(author.authorId)
-  );
+  const excludedAuthorsMissingId = [];
+  const availableAuthors = authors.filter(author => {
+    const id = getAuthorId(author);
+    if (id == null) {
+      excludedAuthorsMissingId.push(author);
+      return false;
+    }
+    return !existingAuthors.includes(String(id));
+  });
+  if (excludedAuthorsMissingId.length) {
+    console.warn('[BookManagement] Excluding authors without id from selection list:', excludedAuthorsMissingId);
+  }
+  console.debug('[BookManagement] availableAuthors ids:', availableAuthors.map(a => String(getAuthorId(a))));
+  console.debug('[BookManagement] existingAuthors:', existingAuthors);
+  console.debug('[BookManagement] selectedAuthors:', selectedAuthors);
 
   const getExistingAuthorsList = () => {
-    return authors.filter(author => existingAuthors.includes(author.authorId));
+    return authors.filter(author => {
+      const id = getAuthorId(author);
+      return id != null && existingAuthors.includes(String(id));
+    });
   };
 
   if (loading) return <LoadingSpinner />;
@@ -413,19 +452,19 @@ function BookManagement() {
                       <div className="flex flex-wrap gap-2">
                         {getExistingAuthorsList().map(author => (
                           <div
-                            key={author.authorId}
+                            key={String(getAuthorId(author))}
                             className="bg-green-100 text-green-800 px-3 py-2 rounded-lg flex items-center gap-2"
                           >
                             <span className="font-medium">{author.name}</span>
                             <button
                               type="button"
-                              onClick={() => handleRemoveAuthor(author.authorId)}
+                              onClick={() => handleRemoveAuthor(String(getAuthorId(author)))}
                               className="text-red-600 hover:text-red-800"
                             >
                               <FiX size={16} />
                             </button>
                           </div>
-                        ))}
+                        ))} 
                       </div>
                     </div>
                   )}
@@ -438,11 +477,12 @@ function BookManagement() {
                       <>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-40 overflow-y-auto border rounded-lg p-3">
                           {availableAuthors.map(author => (
-                            <label key={author.authorId} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                            <label key={String(getAuthorId(author))} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded" htmlFor={`author-${String(getAuthorId(author))}`}>
                               <input
+                                id={`author-${String(getAuthorId(author))}`}
                                 type="checkbox"
-                                checked={selectedAuthors.includes(author.authorId)}
-                                onChange={() => toggleAuthor(author.authorId)}
+                                checked={selectedAuthors.includes(String(getAuthorId(author)))}
+                                onChange={(e) => { e.stopPropagation(); console.debug('[BookManagement] input onChange', getAuthorId(author)); toggleAuthor(getAuthorId(author)); }}
                                 className="w-4 h-4"
                               />
                               <span className="text-sm">{author.name}</span>
@@ -452,6 +492,7 @@ function BookManagement() {
                         <p className="text-sm text-gray-500 mt-2">
                           {selectedAuthors.length} new author(s) to be added
                         </p>
+                        <pre className="text-xs text-gray-500 mt-2">Selected IDs: {JSON.stringify(selectedAuthors)}</pre>
                       </>
                     ) : (
                       <p className="text-sm text-gray-500 p-4 bg-gray-50 rounded-lg">
