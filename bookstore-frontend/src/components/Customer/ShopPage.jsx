@@ -23,6 +23,11 @@ function ShopPage() {
     authorName: '',
   });
 
+  // Pagination
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+  const pageSizes = [8, 12, 16, 24];
+
   const categories = ['Science', 'Art', 'Religion', 'History', 'Geography'];
 
   useEffect(() => {
@@ -148,11 +153,13 @@ function ShopPage() {
 
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+    setPage(1); // reset to first page on any filter change
   };
 
   const clearFilters = () => {
     setFilters({ isbn: '', title: '', category: '', publisherName: '', authorName: '' });
     setSearchParams({});
+    setPage(1);
   };
 
   return (
@@ -291,11 +298,79 @@ function ShopPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {books.map((book) => (
-            <BookCard key={book.isbn} book={book} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {(() => {
+              const total = books.length;
+              const start = (page - 1) * pageSize;
+              const end = Math.min(start + pageSize, total);
+              const paged = books.slice(start, end);
+              // If current page is out of range after filtering, reset to first page
+              if (paged.length === 0 && total > 0) {
+                setPage(1);
+                return null;
+              }
+              return paged.map((book) => (
+                <BookCard key={book.isbn} book={book} />
+              ));
+            })()}
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center justify-between mt-6">
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-600">Show</span>
+              <select
+                value={pageSize}
+                onChange={(e) => { setPageSize(parseInt(e.target.value, 10)); setPage(1); }}
+                className="input-field w-24"
+              >
+                {pageSizes.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+              <span className="text-sm text-gray-600">per page</span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {(() => {
+                const total = books.length;
+                const totalPages = Math.max(1, Math.ceil(total / pageSize));
+                const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+                return (
+                  <>
+                    <button
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      className="px-3 py-1 bg-white border rounded disabled:opacity-50"
+                      disabled={page <= 1}
+                    >
+                      Prev
+                    </button>
+
+                    {pages.map(pn => (
+                      <button
+                        key={pn}
+                        onClick={() => setPage(pn)}
+                        className={`px-3 py-1 border rounded ${pn === page ? 'bg-primary-600 text-white' : 'bg-white'}`}
+                      >
+                        {pn}
+                      </button>
+                    ))}
+
+                    <button
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      className="px-3 py-1 bg-white border rounded disabled:opacity-50"
+                      disabled={page >= totalPages}
+                    >
+                      Next
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
