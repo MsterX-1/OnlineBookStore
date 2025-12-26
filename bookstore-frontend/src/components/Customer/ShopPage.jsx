@@ -73,8 +73,59 @@ function ShopPage() {
         if (filters.authorName) searchParams.authorName = filters.authorName;
 
         console.log('Searching with params:', searchParams);
-        const response = await bookApi.searchBooksAdvanced(searchParams);
-        setBooks(response.data || []);
+
+        // Fetch all books locally so we can enforce per-field checks (AND semantics + early empty-match detection)
+        const allResponse = await bookApi.getAllBooks();
+        const allBooks = allResponse.data || [];
+
+        const hasMatchForField = (field, value) => {
+          const val = value.toString().toLowerCase();
+          switch (field) {
+            case 'isbn':
+              return allBooks.some(b => b.isbn?.toString().includes(value));
+            case 'title':
+              return allBooks.some(b => b.title?.toLowerCase().includes(val));
+            case 'category':
+              return allBooks.some(b => b.category?.toLowerCase() === val);
+            case 'publisherName':
+              return allBooks.some(b => b.publisherName?.toLowerCase().includes(val));
+            case 'authorName': {
+              return allBooks.some(b => {
+                const authors = typeof b.authors === 'string' ? b.authors : (Array.isArray(b.authors) ? b.authors.join(' ') : '');
+                return authors.toLowerCase().includes(val);
+              });
+            }
+            default:
+              return true;
+          }
+        };
+
+        // If any active field has zero matches across the whole dataset, show no results
+        for (const [k, v] of Object.entries(searchParams)) {
+          if (v && !hasMatchForField(k, v)) {
+            console.log(`No matches for filter ${k}=${v}; returning no results`);
+            setBooks([]);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // Apply AND filter across allBooks
+        const matches = (book) => {
+          if (filters.isbn && !(book.isbn?.toString().includes(filters.isbn))) return false;
+          if (filters.title && !(book.title?.toLowerCase().includes(filters.title.toLowerCase()))) return false;
+          if (filters.category && !(book.category?.toLowerCase() === filters.category.toLowerCase())) return false;
+          if (filters.publisherName && !(book.publisherName?.toLowerCase().includes(filters.publisherName.toLowerCase()))) return false;
+          if (filters.authorName) {
+            const authors = typeof book.authors === 'string' ? book.authors : (Array.isArray(book.authors) ? book.authors.join(' ') : '');
+            if (!authors.toLowerCase().includes(filters.authorName.toLowerCase())) return false;
+          }
+          return true;
+        };
+
+        const filtered = allBooks.filter(matches);
+        console.log(`Found ${allBooks.length} total books, ${filtered.length} match all filters`);
+        setBooks(filtered);
       } else {
         // No filters, get all books
         const response = await bookApi.getAllBooks();
