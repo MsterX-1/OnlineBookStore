@@ -30,6 +30,7 @@ namespace Infrastructure.Repository
                         b.Title           AS BookTitle,
                         b.Price           AS UnitPrice,
                         sc.Quantity,
+                        b.BookPhoto ,
                         (b.Price * sc.Quantity) AS TotalPrice
                     FROM Shopping_Cart sc
                     INNER JOIN Book b ON sc.ISBN = b.ISBN

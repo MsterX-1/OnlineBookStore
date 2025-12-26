@@ -39,8 +39,16 @@ function CartPage() {
           <div className="lg:col-span-2 space-y-4">
             {cartItems.map((item) => (
               <div key={item.cartId} className="bg-white rounded-lg shadow-md p-6 flex gap-4">
-                <div className="w-24 h-32 bg-gradient-to-br from-primary-100 to-purple-100 rounded-lg flex items-center justify-center text-4xl flex-shrink-0">
-                  📖
+                <div className="w-24 h-32 bg-gradient-to-br from-primary-100 to-purple-100 rounded-lg flex-shrink-0 overflow-hidden">
+                  { (item.bookPhoto || item.book?.bookPhoto) ? (
+                    <img
+                      src={`data:image/jpeg;base64,${item.bookPhoto || item.book?.bookPhoto}`}
+                      alt={item.bookTitle}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-4xl">📖</div>
+                  ) }
                 </div>
 
                 <div className="flex-grow">

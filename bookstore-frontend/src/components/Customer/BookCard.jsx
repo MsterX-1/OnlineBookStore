@@ -105,7 +105,7 @@ function BookCard({ book }) {
             </span>
           </div>
 
-          {user?.role !== 'Admin' && (
+          {user && user.role !== 'Admin' && (
             <div className="flex gap-2">
               <button
                 onClick={handleAddToCart}
@@ -135,7 +135,7 @@ function BookCard({ book }) {
             </div>
           )}
 
-          {!user?.role && user?.role !== 'Admin' && (
+          {!user && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
