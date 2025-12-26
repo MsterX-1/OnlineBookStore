@@ -32,7 +32,11 @@ namespace Application.Extention
                 Userid = user.User_ID,
                 Username = user.Username,
                 Email = user.Email,
-                Role = user.Role
+                Role = user.Role,
+                First_Name = user.First_Name,
+                Last_Name = user.Last_Name,
+                Phone = user.Phone,
+                Address = user.Address
             };
         }
         public static User ConvertToUser(this RegisterDto dto)
