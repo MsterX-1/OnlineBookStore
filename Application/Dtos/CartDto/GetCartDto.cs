@@ -15,5 +15,6 @@ namespace Application.Dtos.CartDto
 		public decimal? UnitPrice { get; set; }
 		public int Quantity { get; set; }
 		public decimal? TotalPrice { get; set; }
+		public byte[]? BookPhoto { get; set; }
 	}
 }

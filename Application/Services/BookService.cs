@@ -71,7 +71,9 @@ namespace Application.Services
                 throw new Exception($"Publisher with ID {dto.PublisherId} not found.");
 
             var book = dto.ToBookModel();
-            var result = await _bookRepo.CreateBookAsync(book);
+            if(book.Stock_Qty<0)
+                 throw new Exception("Stock quantity cannot be negative.");
+			var result = await _bookRepo.CreateBookAsync(book);
             if (!result)
                 throw new Exception("Failed to create the book.");
             return result;

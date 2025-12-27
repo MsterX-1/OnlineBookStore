@@ -29,11 +29,10 @@ namespace Infrastructure.Repository
                 ISNULL(SUM(oi.Quantity * oi.Unit_Price), 0) AS TotalSales,
                 COUNT(DISTINCT co.Order_ID) AS TotalOrders,
                 ISNULL(SUM(oi.Quantity), 0) AS TotalItemsSold
-                FROM Customer_Order co
-                JOIN Order_Items oi ON co.Order_ID = oi.Order_ID
-                    WHERE co.Order_Date >= DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()) - 1, 0)
-                      AND co.Order_Date <  DATEADD(MONTH, DATEDIFF(MONTH, 0, GETDATE()), 0)";
-            // we get data for the previous month by calculating the first day of the previous month and the first day of the current month
+                    FROM Customer_Order co
+                    JOIN Order_Items oi ON co.Order_ID = oi.Order_ID
+                    WHERE co.Order_Date >= DATEADD(DAY, -30, GETDATE());";
+            // we get data 30 days before now
 
             return await db.QueryFirstOrDefaultAsync<TotalSalesDto>(sql)
                    ?? new TotalSalesDto { TotalSales = 0, TotalOrders = 0, TotalItemsSold = 0 };
@@ -69,14 +68,14 @@ namespace Infrastructure.Repository
                 u.Email,
                 ISNULL(SUM(co.Total_Amount), 0) AS TotalPurchaseAmount,
                 COUNT(co.Order_ID) AS TotalOrders
-                FROM Users u
-                LEFT JOIN Customer_Order co 
-                    ON u.User_ID = co.Customer_ID
-                    AND co.Order_Date >= DATEADD(MONTH, -3, GETDATE())
-                WHERE u.Role = 'Customer'
-                GROUP BY u.User_ID, u.First_Name, u.Last_Name, u.Email
-                HAVING SUM(co.Total_Amount) > 0
-                ORDER BY TotalPurchaseAmount DESC;";
+                    FROM Users u
+                    LEFT JOIN Customer_Order co 
+                        ON u.User_ID = co.Customer_ID
+                        AND co.Order_Date >= DATEADD(DAY, -90, GETDATE())
+                    WHERE u.Role = 'Customer'
+                    GROUP BY u.User_ID, u.First_Name, u.Last_Name, u.Email
+                    HAVING SUM(co.Total_Amount) > 0
+                    ORDER BY TotalPurchaseAmount DESC;";
 
             return await db.QueryAsync<TopCustomerDto>(sql);
         }
@@ -87,18 +86,19 @@ namespace Infrastructure.Repository
 
             var sql = @"
                 SELECT TOP 10
-                    b.ISBN,
-                    b.Title,
-                    b.Category,
-                    ISNULL(SUM(oi.Quantity), 0) AS TotalCopiesSold,
-                    ISNULL(SUM(oi.Quantity * oi.Unit_Price), 0) AS TotalRevenue
-                FROM Book b
-                LEFT JOIN Order_Items oi ON b.ISBN = oi.ISBN
-                LEFT JOIN Customer_Order co ON oi.Order_ID = co.Order_ID
-                WHERE co.Order_Date >= DATEADD(MONTH, -3, GETDATE())
-                GROUP BY b.ISBN, b.Title, b.Category
-                HAVING SUM(oi.Quantity) > 0
-                ORDER BY TotalCopiesSold DESC";
+                b.ISBN,
+                b.Title,
+                b.Category,
+                ISNULL(SUM(oi.Quantity), 0) AS TotalCopiesSold,
+                ISNULL(SUM(oi.Quantity * oi.Unit_Price), 0) AS TotalRevenue
+                    FROM Book b
+                    LEFT JOIN Order_Items oi ON b.ISBN = oi.ISBN
+                    LEFT JOIN Customer_Order co ON oi.Order_ID = co.Order_ID
+                    WHERE co.Order_Date >= DATEADD(DAY, -90, GETDATE())
+                    GROUP BY b.ISBN, b.Title, b.Category
+                    HAVING SUM(oi.Quantity) > 0
+                    ORDER BY TotalCopiesSold DESC;";
+
 
             return await db.QueryAsync<TopSellingBookDto>(sql);
         }
