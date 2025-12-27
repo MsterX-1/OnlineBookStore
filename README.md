@@ -2,7 +2,7 @@
 
 A full-stack web application for managing an online bookstore with comprehensive features for both administrators and customers. Built with ASP.NET Core Web API, React, and SQL Server.
 
-![Book Store](Resources\Home page.png)
+![Book Store](Resources/Home page.png)
 
 ---
 
@@ -185,12 +185,12 @@ bookstore-frontend/
 
 ## 🗄️ Database Design
 
-![Entity Relationship Diagram](Database Schema\ERD.jpg)
+![Entity Relationship Diagram](Database Schema/ERD.jpg)
 
 ### Entity Relationship Model
 
 The database follows a normalized relational design (3NF) with the following entities:
-![ER Model](Database Schema\ERD Mapping.png)
+![ER Model](Database Schema/ERD Mapping.png)
 
 #### Core Entities
 
@@ -307,7 +307,7 @@ END;
 
 ### 👤 User Management
 
-![Manage Profile](Resources\manage profile.png)
+![Manage Profile](Resources/manage profile.png)
 
 #### Customer Features
 
@@ -327,7 +327,7 @@ END;
 
 ### 📖 Book Management (Admin Only)
 
-![Book Management](Resources\Book Managment.png)
+![Book Management](Resources/Book Managment.png)
 
 - ✅ **Add New Books**
 
@@ -338,7 +338,7 @@ END;
   - Select publisher from dropdown
 
 - ✅ **Edit Existing Books**
-  ![Edit Book](Resources\edit book.png)
+  ![Edit Book](Resources/edit book.png)
 
   - Update all book information
   - Change book cover photo
@@ -366,7 +366,7 @@ END;
 
 ### ✍️ Author Management (Admin Only)
 
-![Author Management](Resources\Author Managment.png)
+![Author Management](Resources/Author Managment.png)
 
 - ✅ Add new authors
 - ✅ Edit author information
@@ -377,7 +377,7 @@ END;
 
 ### 🏢 Publisher Management (Admin Only)
 
-![Publisher Management](Resources\Publisher Managment.png)
+![Publisher Management](Resources/Publisher Managment.png)
 
 - ✅ Add new publishers with contact details
 - ✅ Edit publisher information
@@ -388,7 +388,7 @@ END;
 
 ### 🛒 Shopping & Cart
 
-![Shop page](Resources\Shop Page.png)
+![Shop page](Resources/Shop Page.png)
 
 #### Browse & Search
 
@@ -413,7 +413,7 @@ END;
   - Description preview
 
 - ✅ **Book Detail Modal**
-  ![Book Details](Resources\Book Details card.png)
+  ![Book Details](Resources/Book Details card.png)
 
   - Click any book card to view full details
   - Large book cover image
@@ -429,7 +429,7 @@ END;
 
 #### Shopping Cart Management
 
-![Cart Details](Resources\Cart details.png)
+![Cart Details](Resources/Cart details.png)
 
 - ✅ **Cart Operations**
 
@@ -451,7 +451,7 @@ END;
 
 #### Checkout Process
 
-![Checkout](Resources\Checkout.png)
+![Checkout](Resources/Checkout.png)
 
 - ✅ Credit card information input
 - ✅ Card validation (16 digits, expiry date)
@@ -470,7 +470,7 @@ END;
 
 #### Order History
 
-![Order history](Resources\order details.png)
+![Order history](Resources/order details.png)
 
 - ✅ View all past orders
 - ✅ Order details with items
@@ -491,7 +491,7 @@ END;
 
 #### Publisher Orders
 
-![Publisher Orders](Resources\Publisher Orders.png)
+![Publisher Orders](Resources/Publisher Orders.png)
 
 - ✅ **Automatic Order Creation**
 
@@ -517,7 +517,7 @@ END;
 
 #### Admin Dashboard
 
-![Dashboard](Resources\Admin Dashboard.png)
+![Dashboard](Resources/Admin Dashboard.png)
 
 - ✅ **Key Metrics Cards**
 
@@ -553,7 +553,7 @@ END;
 #### Customer Analytics
 
 - ✅ **Top 5 Customers (Last 3 Months)**
-  ![Top Customers](Resources\Top 5 Customers.png)
+  ![Top Customers](Resources/Top 5 Customers.png)
   - Ranked by total purchase amount
   - Customer name and email
   - Total orders
@@ -563,10 +563,10 @@ END;
 
 #### Book Analytics
 
-![Top Books](Resources\Top 10 books.png)
+![Top Books](Resources/Top 10 books.png)
 
 - ✅ **Top 10 Selling Books (Last 3 Months)**
-  ![Top Books](Resources\Top 10 book 2.png)
+  ![Top Books](Resources/Top 10 book 2.png)
 
   - Ranked by copies sold
   - Book title, ISBN, category
@@ -587,7 +587,7 @@ END;
 
 ### 📋 Order Management (Admin Only)
 
-![Order Management](Resources\Order Managment.png)
+![Order Management](Resources/Order Managment.png)
 
 - ✅ **View All Customer Orders**
 
@@ -713,7 +713,7 @@ Password: admin123
 
 ## 📚 API Documentation
 
-![Api Documentation](Resources\Api document.png)
+![Api Documentation](Resources/Api document.png)
 
 ### Base URL
 
