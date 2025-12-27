@@ -99,6 +99,7 @@ namespace Infrastructure.Repository
                     HAVING SUM(oi.Quantity) > 0
                     ORDER BY TotalCopiesSold DESC;";
 
+
             return await db.QueryAsync<TopSellingBookDto>(sql);
         }
 
