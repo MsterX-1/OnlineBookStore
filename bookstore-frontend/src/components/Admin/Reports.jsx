@@ -14,6 +14,10 @@ function Reports() {
   const [topCustomers, setTopCustomers] = useState([]);
   const [topBooks, setTopBooks] = useState([]);
 
+  // Book order count lookup (replenishment orders)
+  const [isbnQuery, setIsbnQuery] = useState('');
+  const [bookOrderCount, setBookOrderCount] = useState(null);
+
   useEffect(() => {
     if (activeTab === 'sales') fetchSalesData();
     if (activeTab === 'customers') fetchTopCustomers();
@@ -71,6 +75,40 @@ function Reports() {
     } catch (error) {
       console.error('Error fetching top books:', error);
       setTopBooks([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchBookOrderCount = async () => {
+    if (!isbnQuery || !isbnQuery.trim()) {
+      alert('Please enter an ISBN');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await reportApi.getBookOrderCount(isbnQuery.trim());
+      const data = response.data;
+
+      // Map response into BookOrderCountDto shape for frontend (with fallbacks for older shapes)
+      const dto = {
+        ISBN: data?.ISBN ?? data?.isbn ?? isbnQuery.trim(),
+        Title: data?.Title ?? data?.title ?? data?.bookTitle ?? '',
+        TotalTimesOrdered: data?.TotalTimesOrdered ?? data?.totalTimesOrdered ?? data?.orderCount ?? data?.count ?? 0,
+        TotalQuantityOrdered: data?.TotalQuantityOrdered ?? data?.totalQuantityOrdered ?? data?.quantity ?? 0,
+        PendingOrders: data?.PendingOrders ?? data?.pendingOrders ?? data?.pending ?? 0,
+        ConfirmedOrders: data?.ConfirmedOrders ?? data?.confirmedOrders ?? data?.confirmed ?? 0,
+      };
+
+      if (typeof data === 'number') {
+        dto.TotalTimesOrdered = data;
+      }
+
+      setBookOrderCount(dto);
+    } catch (error) {
+      console.error('Error fetching book order count:', error);
+      setBookOrderCount(null);
     } finally {
       setLoading(false);
     }
@@ -220,7 +258,33 @@ function Reports() {
       {activeTab === 'books' && !loading && (
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">Top 10 Selling Books (Last 3 Months)</h2>
-          
+
+          {/* Book replenishment orders lookup */}
+          <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+            <h3 className="text-lg font-semibold mb-3">Total Replenishment Orders for a Book</h3>
+            <div className="flex gap-3 items-center mb-3">
+              <input
+                type="text"
+                placeholder="Enter ISBN..."
+                value={isbnQuery}
+                onChange={(e) => setIsbnQuery(e.target.value)}
+                className="input-field"
+              />
+              <button onClick={fetchBookOrderCount} className="btn-primary">Get Count</button>
+              <button onClick={() => { setIsbnQuery(''); setBookOrderCount(null); }} className="btn-secondary">Clear</button>
+            </div>
+            {bookOrderCount !== null && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+                <div>ISBN: <strong>{bookOrderCount.ISBN}</strong></div>
+                <div>Title: <strong>{bookOrderCount.Title || '—'}</strong></div>
+                <div>Total Times Ordered: <strong>{bookOrderCount.TotalTimesOrdered ?? 0}</strong></div>
+                <div>Total Quantity Ordered: <strong>{bookOrderCount.TotalQuantityOrdered ?? 0}</strong></div>
+                <div>Pending Orders: <strong>{bookOrderCount.PendingOrders ?? 0}</strong></div>
+                <div>Confirmed Orders: <strong>{bookOrderCount.ConfirmedOrders ?? 0}</strong></div>
+              </div>
+            )}
+          </div>
+
           {topBooks.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               No book sales data available for the last 3 months
@@ -259,7 +323,14 @@ function Reports() {
                       <tr key={book.isbn} className="hover:bg-gray-50">
                         <td className="px-4 py-3 text-sm font-bold text-gray-800">#{index + 1}</td>
                         <td className="px-4 py-3 text-sm font-medium text-gray-900">{book.title}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{book.isbn}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          <button
+                            onClick={() => fetchBookOrderCount(book.isbn)}
+                            className="text-primary-600 hover:underline"
+                          >
+                            {book.isbn}
+                          </button>
+                        </td>
                         <td className="px-4 py-3 text-sm">
                           <span className="px-2 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-800">
                             {book.category}
