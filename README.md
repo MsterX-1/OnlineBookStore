@@ -8,14 +8,13 @@ A full-stack web application for managing an online bookstore with comprehensive
 
 ## 📋 Table of Contents
 
-- [Project Overview](#-project-overview)
-- [Technology Stack](#-technology-stack)
-- [Architecture](#-architecture)
-- [Database Design](#-database-design)
-- [Features](#-features)
-- [Installation & Setup](#-installation-setup)
-- [API Documentation](#-api-documentation)
-- [Project Structure](#-project-structure)
+- [Project Overview](#project-overview)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Database Design](#database-design)
+- [Features](#features)
+- [Installation & Setup](#installation-setup)
+- [API Documentation](#api-documentation)
 
 ---
 
