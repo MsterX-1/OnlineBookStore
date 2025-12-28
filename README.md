@@ -8,17 +8,19 @@ A full-stack web application for managing an online bookstore with comprehensive
 
 ## 📋 Table of Contents
 
-- [Project Overview](#-project-overview)
-- [Technology Stack](#-technology-stack)
-- [Architecture](#-architecture)
-- [Database Design](#-database-design)
-- [Features](#-features)
-- [Installation & Setup](#-installation--setup)
-- [API Documentation](#-api-documentation)
+- [Project Overview](#project-overview)
+- [Technology Stack](#technology-stack)
+- [Architecture](#architecture)
+- [Database Design](#database-design)
+- [Features](#features)
+- [Installation & Setup](#installation-setup)
+- [API Documentation](#api-documentation)
 
 ---
 
 ## 🎯 Project Overview
+
+<a id="project-overview"></a>
 
 The Online Bookstore Management System is a comprehensive e-commerce platform designed to manage book inventory, customer orders, and publisher relationships. The system supports two user roles:
 
@@ -28,6 +30,8 @@ The Online Bookstore Management System is a comprehensive e-commerce platform de
 ---
 
 ## 💻 Technology Stack
+
+<a id="technology-stack"></a>
 
 ### Backend
 
@@ -58,6 +62,8 @@ The Online Bookstore Management System is a comprehensive e-commerce platform de
 ---
 
 ## 🏗️ Architecture
+
+<a id="architecture"></a>
 
 ### Backend Architecture - Clean Architecture
 
@@ -182,6 +188,8 @@ bookstore-frontend/
 
 ## 🗄️ Database Design
 
+<a id="database-design"></a>
+
 ![Entity Relationship Diagram](Database Schema/ERD.jpg)
 
 ### Entity Relationship Model
@@ -301,6 +309,8 @@ END;
 ---
 
 ## ✨ Features
+
+<a id="features"></a>
 
 ### 👤 User Management
 
@@ -609,6 +619,8 @@ END;
 
 ## 🚀 Installation & Setup
 
+<a id="installation-setup"></a>
+
 ### Prerequisites
 
 - Node.js 18+ and npm
@@ -709,6 +721,8 @@ Password: admin123
 ---
 
 ## 📚 API Documentation
+
+<a id="api-documentation"></a>
 
 ![Api Documentation](Resources/Api_document.png)
 
