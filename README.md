@@ -190,12 +190,12 @@ bookstore-frontend/
 
 <a id="database-design"></a>
 
-![Entity Relationship Diagram](Database Schema/ERD.jpg)
+![Entity Relationship Diagram](Database_Schema/ERD.jpg)
 
 ### Entity Relationship Model
 
 The database follows a normalized relational design (3NF) with the following entities:
-![ER Model](Database Schema/ERD_Mapping.png)
+![ER Model](Database_Schema/ERD_Mapping.png)
 
 #### Core Entities
 
