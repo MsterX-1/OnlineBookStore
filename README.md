@@ -13,7 +13,7 @@ A full-stack web application for managing an online bookstore with comprehensive
 - [Architecture](#architecture)
 - [Database Design](#database-design)
 - [Features](#features)
-- [Installation & Setup](#installation-setup)
+- [Installation & Setup](#installation--setup)
 - [API Documentation](#api-documentation)
 
 ---
