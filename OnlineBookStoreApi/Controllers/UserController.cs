@@ -1,10 +1,12 @@
 ﻿using Application.Dtos.UserDto;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineBookStoreApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -49,33 +51,33 @@ namespace OnlineBookStoreApi.Controllers
         #endregion
 
         #region Post Methods
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
-        {
-            try
-            {
-                var userId = await _userService.Register(dto);
-                return Ok(new { UserId = userId, Message = "User registered successfully" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        //[HttpPost("Register")]
+        //public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        //{
+        //    try
+        //    {
+        //        var userId = await _userService.Register(dto);
+        //        return Ok(new { UserId = userId, Message = "User registered successfully" });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+        //}
 
-        [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
-        {
-            try
-            {
-                var user = await _userService.LoginAsync(dto);
-                return Ok(user);
-            }
-            catch (Exception ex)
-            {
-                return Unauthorized(ex.Message);
-            }
-        }
+        //[HttpPost("Login")]
+        //public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        //{
+        //    try
+        //    {
+        //        var user = await _userService.LoginAsync(dto);
+        //        return Ok(user);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return Unauthorized(ex.Message);
+        //    }
+        //}
         [HttpPost("Logout/{userId}")]
         public async Task<IActionResult> Logout(int userId)
         {

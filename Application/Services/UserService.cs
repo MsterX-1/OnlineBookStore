@@ -36,23 +36,23 @@ namespace Application.Services
                 throw new Exception($"User with ID {id} not found.");
             return user.ConvertToGetUserDto();
         }
-        public async Task<int> Register(RegisterDto dto)
-        {
-            // Check if username already exists
-            var existingUser = await _userRepo.GetUserByUserNameAsync(dto.Username);
-            if (existingUser != null)
-                throw new Exception("Username already exists.");
+        //public async Task<int> Register(RegisterDto dto)
+        //{
+        //    // Check if username already exists
+        //    var existingUser = await _userRepo.GetUserByUserNameAsync(dto.Username);
+        //    if (existingUser != null)
+        //        throw new Exception("Username already exists.");
 
-            var user = dto.ConvertToUser();
-            return await _userRepo.CreateUserAsync(user);
-        }
-        public async Task<GetUserDto> LoginAsync(LoginDto dto)
-        {
-            var user = await _userRepo.LoginAsync(dto.Username, dto.Password);
-            if (user == null)
-                throw new Exception("Invalid username or password.");
-            return user.ConvertToGetUserDto();
-        }
+        //    var user = dto.ConvertToUser();
+        //    return await _userRepo.CreateUserAsync(user);
+        //}
+        //public async Task<GetUserDto> LoginAsync(LoginDto dto)
+        //{
+        //    var user = await _userRepo.LoginAsync(dto.Username, dto.Password);
+        //    if (user == null)
+        //        throw new Exception("Invalid username or password.");
+        //    return user.ConvertToGetUserDto();
+        //}
         public async Task<bool> UpdateUserAsync(UpdateUserDto dto)
         {
             var user = await _userRepo.GetUserByIdAsync(dto.UserId);

@@ -1,8 +1,11 @@
+﻿using System.Text;
 using Application.Interfaces;
 using Application.Services;
 using Infrastructure.Data;
 using Infrastructure.Repository;
-using Microsoft.OpenApi;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 
 namespace OnlineBookStoreApi
@@ -26,7 +29,34 @@ namespace OnlineBookStoreApi
                     Version = "v1",
                     Description = "API for Online Bookstore Order Processing System"
                 });
+
+                // JWT Bearer support
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter your JWT token like this: Bearer {token}"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+                });
             });
+
             #endregion
 
             #region Configure CORS
@@ -40,6 +70,35 @@ namespace OnlineBookStoreApi
                                .AllowAnyHeader();
                     });
             });
+            #endregion
+
+            #region Configure JWT
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])
+                    ),
+
+                    ClockSkew = TimeSpan.Zero // important: no extra expiration grace
+                };
+            });
+
             #endregion
 
             // Register Database Context
@@ -65,6 +124,7 @@ namespace OnlineBookStoreApi
             builder.Services.AddScoped<OrderService>();
             builder.Services.AddScoped<PublisherOrderService>();
             builder.Services.AddScoped<ReportService>();
+            builder.Services.AddScoped<AuthService>();
 
 
             var app = builder.Build();
@@ -81,6 +141,7 @@ namespace OnlineBookStoreApi
 
             app.UseCors("AllowAll");
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
