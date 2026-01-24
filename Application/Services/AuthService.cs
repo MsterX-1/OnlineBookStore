@@ -36,8 +36,7 @@ namespace Application.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub,$"{user.User_ID}"),
                 new Claim("Role",user.Role),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
 

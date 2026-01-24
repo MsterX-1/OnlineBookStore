@@ -1,5 +1,6 @@
 ﻿using Application.Dtos.OrderDto;
 using Application.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,7 +73,7 @@ namespace OnlineBookStoreApi.Controllers
 		{
 			try
 			{
-				var response = await _orderService.CreateOrderAsync(dto.CustomerId,dto.CCNumber,dto.CCExpiry);
+                var response = await _orderService.CreateOrderAsync(dto.CustomerId,dto.CCNumber,dto.CCExpiry);
 				return Ok(new { OrderID = response, Messege = "Order Placed Successfully" });
 			}
 			catch (Exception ex)
