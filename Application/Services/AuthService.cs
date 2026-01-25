@@ -68,21 +68,26 @@ namespace Application.Services
                 throw new Exception("Username already exists.");
 
             var user = dto.ConvertToUser();
-             await _userRepo.CreateUserAsync(user);
 			user.Role = "Customer";
+
+            // Create new User and it returns the new User ID
+            var newUserID = await _userRepo.CreateUserAsync(user);
+
 			// Generate new JWT token
 			var jwtToken = await CreateJwtTokenAsync(user);
 
 			var response = new AuthResponseDto
 			{
-				Message = "Login successful",
+				Message = "Registered Successfully",
 				IsAuthenticated = true,
-				Userid = user.User_ID,
+				Userid = newUserID,
 				Username = user.Username,
 				First_Name = user.First_Name,
 				Last_Name = user.Last_Name,
 				Email = user.Email,
-				Role = user.Role,
+                Phone = user.Phone,
+                Address = user.Address,
+                Role = user.Role,
 				Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
 				TokenExpiresOn = jwtToken.ValidTo
 			};
@@ -100,13 +105,15 @@ namespace Application.Services
 
             var response = new AuthResponseDto
             {
-                Message = "Login successful",
+                Message = "Login Successful",
                 IsAuthenticated = true,
                 Userid = user.User_ID,
                 Username = user.Username,
                 First_Name = user.First_Name,
                 Last_Name = user.Last_Name,
                 Email = user.Email,
+                Phone = user.Phone,
+                Address = user.Address,
                 Role = user.Role,
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
                 TokenExpiresOn = jwtToken.ValidTo
