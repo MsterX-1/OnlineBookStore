@@ -93,6 +93,17 @@ CREATE TABLE Publisher_Order (
     Status VARCHAR(20) DEFAULT 'Pending' CHECK (Status IN ('Pending', 'Confirmed')),
     FOREIGN KEY (ISBN) REFERENCES Book(ISBN) ON DELETE CASCADE
 );
+-- 10. Refresh Token
+CREATE TABLE RefreshToken (
+	User_ID INT NOT NULL,
+	Token VARCHAR(32) NOT NULL,
+	Created DateTime NOT NULL,
+	Expires DateTime NOT NULL,
+	Revoked DateTime,
+	Primary key(User_ID,Token),
+	Foreign key(User_ID) References Users(User_ID)
+);
+
 -- Triggers
 -- 1. Prevent Negative Stock (BEFORE UPDATE logic)
 go
