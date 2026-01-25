@@ -60,7 +60,7 @@ namespace Application.Services
 
 
 
-        public async Task<int> Register(RegisterDto dto)
+        public async Task<AuthResponseDto> Register(RegisterDto dto)
         {
             // Check if username already exists
             var existingUser = await _userRepo.GetUserByUserNameAsync(dto.Username);
@@ -68,8 +68,26 @@ namespace Application.Services
                 throw new Exception("Username already exists.");
 
             var user = dto.ConvertToUser();
-            return await _userRepo.CreateUserAsync(user);
-        }
+             await _userRepo.CreateUserAsync(user);
+			user.Role = "Customer";
+			// Generate new JWT token
+			var jwtToken = await CreateJwtTokenAsync(user);
+
+			var response = new AuthResponseDto
+			{
+				Message = "Login successful",
+				IsAuthenticated = true,
+				Userid = user.User_ID,
+				Username = user.Username,
+				First_Name = user.First_Name,
+				Last_Name = user.Last_Name,
+				Email = user.Email,
+				Role = user.Role,
+				Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
+				TokenExpiresOn = jwtToken.ValidTo
+			};
+			return response;
+		}
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {

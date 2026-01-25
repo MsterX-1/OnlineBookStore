@@ -1,5 +1,6 @@
 ﻿using Application.Dtos.UserDto;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,8 @@ namespace OnlineBookStoreApi.Controllers
             _authService = authService;
         }
 
-        [HttpPost("Login")]
+		
+		[HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
             try
@@ -28,5 +30,24 @@ namespace OnlineBookStoreApi.Controllers
                 return Unauthorized(ex.Message);
             }
         }
-    }
+		[HttpPost("Register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        {
+            try
+            {
+                var respnse = await _authService.Register(dto);
+                return Ok(respnse);
+            }
+			catch (Exception ex)
+			{
+				return BadRequest(new
+				{
+					error = ex.Message,
+					inner = ex.InnerException?.Message,
+					stack = ex.StackTrace
+				});
+			}
+
+		}
+	}
 }
