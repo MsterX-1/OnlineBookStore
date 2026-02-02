@@ -1,10 +1,12 @@
 ﻿using Application.Dtos.BookDto;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineBookStoreApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BookController : ControllerBase
@@ -69,6 +71,7 @@ namespace OnlineBookStoreApi.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetLowStockBooks")]
         public async Task<IActionResult> GetLowStockBooks()
         {
@@ -86,6 +89,7 @@ namespace OnlineBookStoreApi.Controllers
         #endregion
 
         #region Post Methods
+        [Authorize(Roles = "Admin")]
         [HttpPost("CreateBook")]
         public async Task<IActionResult> CreateBook([FromBody] CreateBookDto dto)
         {
@@ -102,6 +106,7 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("AddBookAuthors")]
         public async Task<IActionResult> AddBookAuthors([FromBody] AddOrRemoveBookAuthorsDto dto)
         {
@@ -131,6 +136,7 @@ namespace OnlineBookStoreApi.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("UploadBookPhoto")]
         public async Task<IActionResult> UploadBookPhoto([FromForm]  PhotoUploder dto)
         {
@@ -174,6 +180,7 @@ namespace OnlineBookStoreApi.Controllers
         #endregion
 
         #region Put Methods
+        [Authorize(Roles = "Admin")]
         [HttpPut("UpdateBook")]
         public async Task<IActionResult> UpdateBook([FromBody] UpdateBookDto dto)
         {
@@ -193,6 +200,7 @@ namespace OnlineBookStoreApi.Controllers
         #endregion
 
         #region Delete Methods
+        [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteBook/{isbn}")]
         public async Task<IActionResult> DeleteBook(string isbn)
         {
@@ -209,6 +217,7 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete("RemoveBookAuthors")]
         public async Task<IActionResult> RemoveBookAuthors([FromBody] AddOrRemoveBookAuthorsDto dto)
         {

@@ -114,6 +114,7 @@ namespace OnlineBookStoreApi
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IPublisherOrderRepository, PublisherOrderRepository>();
             builder.Services.AddScoped<IReportRepository, ReportRepository>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
             // Register Service
             builder.Services.AddScoped<UserService>();

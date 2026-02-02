@@ -1,11 +1,13 @@
 ﻿using Application.Dtos.OrderDto;
 using Application.Services;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineBookStoreApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class OrderController : ControllerBase
@@ -16,7 +18,8 @@ namespace OnlineBookStoreApi.Controllers
         {
             _orderService = orderService;
         }
-		[HttpGet("GetAllOrders")]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetAllOrders")]
 		public async Task<IActionResult> GetAllOrders()
 		{
 			try
@@ -29,7 +32,8 @@ namespace OnlineBookStoreApi.Controllers
 				return NotFound(ex.Message);
 			}
 		}
-		[HttpGet("GetOrder/{orderId}")]
+
+        [HttpGet("GetOrder/{orderId}")]
 		public async Task<IActionResult> GetOrder(int orderId)
 		{
 			try

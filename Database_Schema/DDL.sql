@@ -96,7 +96,7 @@ CREATE TABLE Publisher_Order (
 -- 10. Refresh Token
 CREATE TABLE RefreshToken (
 	User_ID INT NOT NULL,
-	Token VARCHAR(32) NOT NULL,
+	Token VARCHAR(128) NOT NULL,
 	Created DateTime NOT NULL,
 	Expires DateTime NOT NULL,
 	Revoked DateTime,
