@@ -62,12 +62,13 @@ namespace OnlineBookStoreApi
             #region Configure CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",
+                options.AddPolicy("AllowFrontend",
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
+                        builder.WithOrigins("http://localhost:3000", "https://localhost:3000")
                                .AllowAnyMethod()
-                               .AllowAnyHeader();
+                               .AllowAnyHeader()
+                               .AllowCredentials(); // CRITICAL: Allow credentials (cookies, auth headers)
                     });
             });
             #endregion
@@ -140,7 +141,7 @@ namespace OnlineBookStoreApi
             // Middleware
             app.UseHttpsRedirection();
 
-            app.UseCors("AllowAll");
+            app.UseCors("AllowFrontend"); // Use the frontend-specific policy
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineBookStoreApi.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class PublisherController : ControllerBase
@@ -30,7 +30,8 @@ namespace OnlineBookStoreApi.Controllers
 				return NotFound(ex.Message);
 			}
 		}
-		[HttpGet("GetPublisher/{id}")]
+        [Authorize(Roles = "Admin")]
+        [HttpGet("GetPublisher/{id}")]
 		public async Task<IActionResult> GetPublisherbyid(int id)
 		{
 			try
@@ -43,7 +44,8 @@ namespace OnlineBookStoreApi.Controllers
 				return NotFound(ex.Message);
 			}
 		}
-		[HttpPost("CreatePublisher")]
+        [Authorize(Roles = "Admin")]
+        [HttpPost("CreatePublisher")]
 		public async Task<IActionResult> CreatePublisher([FromBody] CreatePublisherDto dto)
 		{
 			try
@@ -56,7 +58,8 @@ namespace OnlineBookStoreApi.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
-		[HttpPut("UpdatePublisher")]
+        [Authorize(Roles = "Admin")]
+        [HttpPut("UpdatePublisher")]
 		public async Task<IActionResult> UpdatePublisher([FromBody] UpdatePublisherDto dto)
 		{
 			try
@@ -69,8 +72,8 @@ namespace OnlineBookStoreApi.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
-
-		[HttpDelete("DeletePublisher/{id}")]
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("DeletePublisher/{id}")]
 		public async Task<IActionResult> DeletePublisher(int id)
 		{
 			try

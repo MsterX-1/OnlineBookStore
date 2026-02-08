@@ -32,7 +32,10 @@ namespace OnlineBookStoreApi.Controllers
             {
                 HttpOnly = true,           // Cannot be accessed by JavaScript (XSS protection)
                 Expires = expires,         // Cookie expires with the refresh token
-                Secure = true,             // Only sent over HTTPS (set to true in production)
+                // For cross-site POST requests (SPA -> API refresh) browsers require
+                // SameSite=None and Secure=true. Ensure both frontend and API use HTTPS in dev.
+                Secure = true,
+                SameSite = SameSiteMode.None,
                 IsEssential = true         // Required for functionality
             };
 
@@ -137,7 +140,7 @@ namespace OnlineBookStoreApi.Controllers
                     return Unauthorized("Invalid User ID claim.");
 
                 // clear customer cart
-                if(!await _cartService.ClearCustomerCartAsync(userId))
+                if (!await _cartService.ClearCustomerCartAsync(userId))
                     return BadRequest("Failed to clear shopping cart during logout.");
 
                 var result = await _authService.LogoutAsync(userId);

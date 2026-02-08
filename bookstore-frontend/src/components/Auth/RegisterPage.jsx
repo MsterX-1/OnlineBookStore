@@ -21,8 +21,13 @@ function RegisterPage() {
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
-      await register(values);
-      navigate('/login');
+      const user = await register(values);
+      // Registration now auto-logs in the user, redirect based on role
+      if (user.role === 'Admin') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (error) {
       // Error handled in context
     } finally {

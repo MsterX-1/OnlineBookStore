@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineBookStoreApi.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BookController : ControllerBase
@@ -18,7 +17,7 @@ namespace OnlineBookStoreApi.Controllers
             _bookService = bookService;
         }
         // All Endpoints are created for Book Entity
-         #region Get Methods
+        #region Get Methods
         [HttpGet("GetAllBooks")]
         public async Task<IActionResult> GetAllBooks()
         {
@@ -138,7 +137,7 @@ namespace OnlineBookStoreApi.Controllers
         }
         [Authorize(Roles = "Admin")]
         [HttpPost("UploadBookPhoto")]
-        public async Task<IActionResult> UploadBookPhoto([FromForm]  PhotoUploder dto)
+        public async Task<IActionResult> UploadBookPhoto([FromForm] PhotoUploder dto)
         {
             try
             {
@@ -175,7 +174,7 @@ namespace OnlineBookStoreApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
         #endregion
 
