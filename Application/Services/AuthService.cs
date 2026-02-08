@@ -74,38 +74,37 @@ namespace Application.Services
             };
         }
 
-        // Refresh Token Logic
-        // Allow Rotation and without Revoke to enable multiple device
         public async Task<AuthResult> RefreshTokenAsync(string token)
         {
-            // Get the refresh token from the database
             var existingToken = await _refreshTokenRepo.GetRefreshTokenByTokenAsync(token);
 
-            // Validate the refresh token
             if (existingToken == null || !existingToken.IsActive)
                 throw new Exception("Invalid or expired refresh token.");
 
-            // Get the user associated with this refresh token
             var user = await _userRepo.GetUserByIdAsync(existingToken.User_ID);
-
             if (user == null)
-                throw new Exception("User not found for the provided refresh token.");
+                throw new Exception("User not found.");
 
-            // Generate new JWT token and refresh token
+            // Generate new JWT and refresh token
             var jwtToken = CreateJwtToken(user);
             var newRefreshToken = GenerateRefreshToken(user);
-            // Save Refresh Token
+
+            // Save new token
             if (!await _refreshTokenRepo.SaveRefreshTokenAsync(newRefreshToken))
                 throw new Exception("Failed to save refresh token.");
-            
-            var result = new AuthResult
+
+            // Revoke ONLY the current token (this device)
+            // Other devices' tokens remain valid
+            if (!await _refreshTokenRepo.RevokeRefreshTokenAsync(existingToken.Token))
+                throw new Exception("Failed to revoke old token.");
+
+            return new AuthResult
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
                 TokenExpiresOn = jwtToken.ValidTo,
                 RefreshToken = newRefreshToken.Token,
                 RefreshTokenExpiration = newRefreshToken.Expires
             };
-            return result;
         }
 
         public async Task<AuthResult> Register(RegisterDto dto)
@@ -146,46 +145,21 @@ namespace Application.Services
             if (user == null)
                 throw new Exception("Invalid username or password.");
 
-            // Generate new JWT token
             var jwtToken = CreateJwtToken(user);
 
-            var result = new AuthResult
+            //ALWAYS create a NEW refresh token for each login to support multiple device login and rotation
+            var newRefreshToken = GenerateRefreshToken(user);
+
+            if (!await _refreshTokenRepo.SaveRefreshTokenAsync(newRefreshToken))
+                throw new Exception("Failed to save refresh token.");
+
+            return new AuthResult
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtToken),
-                TokenExpiresOn = jwtToken.ValidTo
+                TokenExpiresOn = jwtToken.ValidTo,
+                RefreshToken = newRefreshToken.Token,
+                RefreshTokenExpiration = newRefreshToken.Expires
             };
-
-            // Handel Refresh Token logic
-            // Rotate refresh token, will generate new refresh token when login if there is no Active token for that user
-            // And without revoking old token to enable multiple device
-
-            // Get existing refresh tokens for this user order by the newest
-            var existingRefreshTokens = await _refreshTokenRepo.GetRefreshTokensByUserIdAsync(user.User_ID);
-
-            // Get the newest active refresh token if exists
-            var activeRefreshToken = existingRefreshTokens?
-                .FirstOrDefault(t => t.IsActive);
-
-            // If active refresh token exists, reuse it
-            if (activeRefreshToken != null)
-            {
-                result.RefreshToken = activeRefreshToken.Token;
-                result.RefreshTokenExpiration = activeRefreshToken.Expires;
-            }
-            else
-            {
-                // Generate and save new refresh token
-                var newRefreshToken = GenerateRefreshToken(user);
-                var saved = await _refreshTokenRepo.SaveRefreshTokenAsync(newRefreshToken);
-                if (!saved)
-                    throw new Exception("Failed to save refresh token.");
-
-                result.RefreshToken = newRefreshToken.Token;
-                result.RefreshTokenExpiration = newRefreshToken.Expires;
-            }
-
-
-            return result;
         }
 
         // Revokes all refresh tokens for a user (logout from all devices)

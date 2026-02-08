@@ -14,6 +14,7 @@ namespace Application.Interfaces
         Task<IEnumerable<RefreshToken>> GetRefreshTokensByUserIdAsync(int UserId);
         Task <RefreshToken?> GetRefreshTokenByTokenAsync(string token);
         Task<bool> RevokeAllUserRefreshTokensAsync(int UserId);
+        Task<bool> RevokeRefreshTokenAsync(string token);
 
     }
 }

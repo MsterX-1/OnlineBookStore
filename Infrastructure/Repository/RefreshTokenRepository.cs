@@ -64,5 +64,17 @@ namespace Infrastructure.Repository
 
 
         }
+        public async Task<bool> RevokeRefreshTokenAsync(string token)
+        {
+            using var db = _context.CreateConnection();
+            var sql = @"
+                UPDATE RefreshToken
+                SET Revoked = GETUTCDATE()
+                WHERE Token = @token 
+                    AND Revoked IS NULL 
+                    AND Expires > GETUTCDATE();";// only revoke active tokens
+            var result = await db.ExecuteAsync(sql, new { token });
+            return result > 0;
+        }
     }
 }
