@@ -23,7 +23,10 @@ function LoginPage() {
         navigate('/');
       }
     } catch (error) {
-      // Error handled in context
+      // Propagate server error to the form so it appears inline
+      const message = error.response?.data || 'Login failed';
+      // setStatus is provided by Formik in render props; we'll throw a custom error to be handled below
+      throw new Error(message);
     } finally {
       setSubmitting(false);
     }
@@ -42,10 +45,19 @@ function LoginPage() {
           <Formik
             initialValues={{ username: '', password: '' }}
             validationSchema={loginSchema}
-            onSubmit={handleSubmit}
+            onSubmit={async (values, formikHelpers) => {
+              try {
+                await handleSubmit(values, formikHelpers);
+              } catch (err) {
+                formikHelpers.setStatus(err.message);
+              }
+            }}
           >
-            {({ isSubmitting }) => (
+            {({ isSubmitting, status }) => (
               <Form className="space-y-6">
+                {status && (
+                  <div className="text-red-600 text-sm mb-2" role="alert">{status}</div>
+                )}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Username

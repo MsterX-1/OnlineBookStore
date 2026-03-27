@@ -86,7 +86,7 @@ namespace Infrastructure.Repository
             using var db = _context.CreateConnection();
             var sql = "DELETE FROM Shopping_Cart WHERE Customer_ID = @CustomerId";
             var rows = await db.ExecuteAsync(sql, new { CustomerId = customerId });
-            return rows > 0;
+            return true;
 		}
         public async Task<ShoppingCart?> GetCartItemByCustomerAndISBNAsync(int customerId, string isbn)
         {

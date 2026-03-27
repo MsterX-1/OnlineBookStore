@@ -64,7 +64,7 @@ function ProfilePage() {
     }
   };
 
-  const handlePasswordSubmit = async (values, { setSubmitting, resetForm }) => {
+  const handlePasswordSubmit = async (values, { setSubmitting, resetForm, setFieldError }) => {
     try {
       await changePassword({ 
         userId: user.userid, 
@@ -73,7 +73,9 @@ function ProfilePage() {
       });
       resetForm();
     } catch (error) {
-      // Error handled in context
+      // Show server error message inline on the old password field like login errors
+      const message = error.response?.data || 'Password change failed';
+      setFieldError('oldPassword', message);
     } finally {
       setSubmitting(false);
     }

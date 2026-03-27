@@ -1,5 +1,6 @@
 ﻿using Application.Dtos.BookDto;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace OnlineBookStoreApi.Controllers
             _bookService = bookService;
         }
         // All Endpoints are created for Book Entity
-         #region Get Methods
+        #region Get Methods
         [HttpGet("GetAllBooks")]
         public async Task<IActionResult> GetAllBooks()
         {
@@ -69,6 +70,7 @@ namespace OnlineBookStoreApi.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetLowStockBooks")]
         public async Task<IActionResult> GetLowStockBooks()
         {
@@ -86,6 +88,7 @@ namespace OnlineBookStoreApi.Controllers
         #endregion
 
         #region Post Methods
+        [Authorize(Roles = "Admin")]
         [HttpPost("CreateBook")]
         public async Task<IActionResult> CreateBook([FromBody] CreateBookDto dto)
         {
@@ -102,6 +105,7 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("AddBookAuthors")]
         public async Task<IActionResult> AddBookAuthors([FromBody] AddOrRemoveBookAuthorsDto dto)
         {
@@ -131,8 +135,9 @@ namespace OnlineBookStoreApi.Controllers
                 return NotFound(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("UploadBookPhoto")]
-        public async Task<IActionResult> UploadBookPhoto([FromForm]  PhotoUploder dto)
+        public async Task<IActionResult> UploadBookPhoto([FromForm] PhotoUploder dto)
         {
             try
             {
@@ -169,11 +174,12 @@ namespace OnlineBookStoreApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
         #endregion
 
         #region Put Methods
+        [Authorize(Roles = "Admin")]
         [HttpPut("UpdateBook")]
         public async Task<IActionResult> UpdateBook([FromBody] UpdateBookDto dto)
         {
@@ -193,6 +199,7 @@ namespace OnlineBookStoreApi.Controllers
         #endregion
 
         #region Delete Methods
+        [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteBook/{isbn}")]
         public async Task<IActionResult> DeleteBook(string isbn)
         {
@@ -209,6 +216,7 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete("RemoveBookAuthors")]
         public async Task<IActionResult> RemoveBookAuthors([FromBody] AddOrRemoveBookAuthorsDto dto)
         {

@@ -1,10 +1,12 @@
 ﻿using Application.Dtos.PublisherOrderDto;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineBookStoreApi.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class PublisherOrderController : ControllerBase

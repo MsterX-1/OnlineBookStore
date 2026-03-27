@@ -1,8 +1,11 @@
+﻿using System.Text;
 using Application.Interfaces;
 using Application.Services;
 using Infrastructure.Data;
 using Infrastructure.Repository;
-using Microsoft.OpenApi;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 
 namespace OnlineBookStoreApi
@@ -26,20 +29,77 @@ namespace OnlineBookStoreApi
                     Version = "v1",
                     Description = "API for Online Bookstore Order Processing System"
                 });
+
+                // JWT Bearer support
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter your JWT token like this: Bearer {token}"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] {}
+            }
+                });
             });
+
             #endregion
 
             #region Configure CORS
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAll",
+                options.AddPolicy("AllowFrontend",
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
+                        builder.WithOrigins("http://localhost:3000", "https://localhost:3000")
                                .AllowAnyMethod()
-                               .AllowAnyHeader();
+                               .AllowAnyHeader()
+                               .AllowCredentials(); // CRITICAL: Allow credentials (cookies, auth headers)
                     });
             });
+            #endregion
+
+            #region Configure JWT
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = builder.Configuration["JWT:Issuer"],
+                    ValidAudience = builder.Configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["JWT:SecretKey"])),
+
+                    ClockSkew = TimeSpan.Zero // important: no extra expiration grace
+                };
+            });
+
             #endregion
 
             // Register Database Context
@@ -55,6 +115,7 @@ namespace OnlineBookStoreApi
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IPublisherOrderRepository, PublisherOrderRepository>();
             builder.Services.AddScoped<IReportRepository, ReportRepository>();
+            builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
             // Register Service
             builder.Services.AddScoped<UserService>();
@@ -65,6 +126,7 @@ namespace OnlineBookStoreApi
             builder.Services.AddScoped<OrderService>();
             builder.Services.AddScoped<PublisherOrderService>();
             builder.Services.AddScoped<ReportService>();
+            builder.Services.AddScoped<AuthService>();
 
 
             var app = builder.Build();
@@ -79,8 +141,9 @@ namespace OnlineBookStoreApi
             // Middleware
             app.UseHttpsRedirection();
 
-            app.UseCors("AllowAll");
+            app.UseCors("AllowFrontend"); // Use the frontend-specific policy
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

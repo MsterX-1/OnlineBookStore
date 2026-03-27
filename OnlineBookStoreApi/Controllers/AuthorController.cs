@@ -1,11 +1,13 @@
 ﻿using Application.Dtos.AuthorDto;
 using Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace OnlineBookStoreApi.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class AuthorController : ControllerBase
@@ -30,6 +32,7 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpGet("GetAuthorById/{id}")]
         public async Task<IActionResult> GetAuthorByIdAsync(int id)
         {
@@ -44,6 +47,7 @@ namespace OnlineBookStoreApi.Controllers
             }
 
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("CreateAuthor")]
         public async Task<IActionResult> CreateAuthorAsync([FromBody] CreateAuthorDto Dto)
         {
@@ -57,6 +61,7 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete("DeleteAuthor/{authorId}")]
         public async Task<IActionResult> DeleteAuthorAsync(int authorId)
         {
@@ -70,6 +75,7 @@ namespace OnlineBookStoreApi.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut("updateauthor")]
         public async Task<IActionResult> UpdateAuthorAsync([FromBody] UpdateAuthorDTO dto)
         {
